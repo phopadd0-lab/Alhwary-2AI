@@ -74,9 +74,9 @@ if (subBots.list().length >= 30) {
   }
 };
 
-run.command = ["تنصيب"];
+run.command = ["ALHBOT"];
 run.noSub = true;
-run.usage =  ["تنصيب"];
+run.usage =  ["ALHBOT"];
 run.category = "sub";
 export default run;
 
@@ -85,26 +85,26 @@ export default run;
 const Func = {
   pair: async (conn, code, num, m, reply_status) => {
     await conn.sendButton(m.chat, {
-      imageUrl: "https://i.pinimg.com/736x/20/c1/cd/20c1cd046c862caa5a42e07d00042357.jpg",
+      imageUrl: "https://ibb.co/WZVB3Cq",
       bodyText: `🔐⤿ نـظـام الـبـوتـات الـفـرعـيـه 𑁍
 ⊱⋅ ──────────── ⋅⊰
 📱 — الرقم: ${num}
 🔑 — الكود: ${code}
 ⊱⋅ ──────────── ⋅⊰
 > *_افتح واتساب > الأجهزة المرتبطة > ربط جهاز برقم الهاتف > أدخل الكود_*`,
-      footerText: "@𝑺𝒚𝒔𝒕𝒆𝒎_𝑺𝒖𝒃𝑩𝒐𝒕𝒔_𝑽𝑰𝑰",
+      footerText: "@O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
       buttons: [
-        { name: "cta_copy", params: { display_text: "⟨🎪| 𝐂𝐨𝐩𝐲 𝐂𝐨𝐝𝐞 |🎪⟩", copy_code: code } },
-        { name: "cta_url", params: { display_text: "⟨🫒| 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 𝐕𝐀 |🫒⟩", url: "https://google.com" } },
+        { name: "cta_copy", params: { display_text: "⟨⚔️| 𝐂𝐨𝐩𝐲 𝐂𝐨𝐝𝐞 |⚔️⟩", copy_code: code } },
+        { name: "cta_url", params: { display_text: "⟨🫒| O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې |🫒⟩", url: "https://google.com" } },
       ],
       mentions: [m.sender],
       newsletter: {
-        name: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
-        jid: '120363225356834044@newsletter'
+        name: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې',
+        jid: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې'
       },
       interactiveConfig: {
         buttons_limits: 10,
-        list_title: "@𝑺𝒚𝒔𝒕𝒆𝒎_𝑺𝒖𝒃𝑩𝒐𝒕𝒔_𝑽𝑰𝑰",
+        list_title: "@O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
         button_title: "Click Here",
         canonical_url: `https://code.com/${code}`
       }
@@ -117,7 +117,7 @@ const Func = {
       text: `✅ — *تـم الاتـصـال بـنـجـاح*\n\n📱 الرقم: ${num}\n> *البوت جاهز للاستخدام الآن*`,
       contextInfo: {
         externalAdReply: {
-          title: "𝐏𝐎𝐌𝐍𝐈-𝐀𝐈 🎪 | 𝐁𝐨𝐭 𝐢𝐬 𝐛𝐮𝐢𝐥𝐭 𝐨𝐧 𝐭𝐡𝐞 𝐖𝐒/𝐕𝐈𝐈 𝐟𝐫𝐚𝐦𝐞𝐰𝐨𝐫𝐤",
+          title: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
           body: "𝚆𝚑𝚊𝚝𝚜𝙰𝚙𝚙 𝚋𝚘𝚝 𝚝𝚑𝚊𝚝 𝚒𝚜 𝚎𝚊𝚜𝚢 𝚝𝚘 𝚖𝚘𝚍𝚒𝚏𝚢 𝚊𝚗𝚍 𝚟𝚎𝚛𝚢 𝚏𝚊𝚜𝚝",
           thumbnailUrl: img,
           sourceUrl: '',
