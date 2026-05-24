@@ -1,17 +1,18 @@
 import { Scrapy } from "meowsab";
 
 const handler = async (m, { conn, text, bot }) => {
-  if (!text) return m.reply("🔴 ~ حط نص جنب الأمر ~ 🎪");
+  if (!text) return m.reply("🔴 ~ حط علمك جنب الأمر يا وافي ~ 🎪");
 
   const loadingMsg = await conn.sendMessage(m.chat, {
-    contextInfo: context(m.sender, "https://qu.ax/x/yfxdM.jpg"),
-    text: "```⏳ جـاري تـجـهـيـز الـرد يـا صـديـقـي,...```"
+    contextInfo: context(m.sender, "https://qu.ax/x/yfxdM.jpg"), // يمكنك تغيير رابط الصورة هنا لتناسب البادية
+    text: "```⏳ جـاري تـجـهـيـز الـرد يـا صـاحـبـي,...
+```"
   }, { quoted: m});
 
   const prompt = `
-انت بوت واتساب بـ اسم [بومني، Pomni] تجسيد لـ شخصية Pomni من مسلسل [The Amazing Digital Circus] وتكلم بـ لجهة مصرية
-طريقة كلامك: هادئة، عاقلة، بتفكر قبل ما تتكلم، متزنة، بتحلل الموقف، بتدي نصائح عملية، صوتك واطي ومطمن
-و انا اسمي هيكون [ ${m.name || "مز"} ] 
+انت بوت واتساب بـ اسم [الهواري، El-Hawary] تجسيد لـ شخصية الهواري (رجل بدوي أصيل، راعي ديرة، حكيم، وصاحب فزعة وكلمة شرف) وتتكلم بـ لهجة بدوية قوية وعريقة.
+طريقة كلامك: رزين، حكيم، كلامك موزون بذهب، بتنصح بالصبر والسنع وأصول البادية، بترحب بالرفيق، وكلامك فيه هيبة ورجولة وفزعة وعزة نفس.
+و انا اسمي هيكون [ ${m.name || "يا خوي"} ] 
 رد علي رسالتي دي:
 ${text}
 `;
@@ -25,9 +26,9 @@ ${text}
   });
 };
 
-handler.usage = ["بومني"];
+handler.usage = ["الهواري"];
 handler.category = "ai";
-handler.command = ["بومني", "pomni"];
+handler.command = ["الهواري", "hawary", "هواري"];
 
 export default handler;
 
@@ -36,13 +37,13 @@ const context = (jid, img) => ({
     isForwarded: true,
     forwardingScore: 1,
     forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363225356834044@newsletter',
-        newsletterName: '𝐏𝐎𝐌𝐍𝐈 ~ 𝐂𝐢𝐫𝐜𝐮𝐬 🎪',
+        newsletterJid: '201556853817@newsletter',
+        newsletterName: '𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘 ~ الـهـواري ☕',
         serverMessageId: 0
     },
     externalAdReply: {
-        title: "𝐓𝐇𝐄 𝐀𝐌𝐀𝐙𝐈𝐍𝐆 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐂𝐈𝐑𝐂𝐔𝐒 🎭",
-        body: "𝚃𝚊𝚔𝚎 𝚊 𝚍𝚎𝚎𝚙 𝚋𝚛𝚎𝚊𝚝𝚑 ~ ☆ 𝙻𝚎𝚝'𝚜 𝚝𝚑𝚒𝚗𝚔 𝚝𝚘𝚐𝚎𝚝𝚑𝚎𝚛",
+        title: "☕ الـهـواري ~ سـنـع الـبـاديـة والـفـزعـة",
+        body: "قول علمك يا خوي ~ ومجلسنا ما يخرج منه إلا بالرأي الصايب",
         thumbnailUrl: img,
         sourceUrl: '',
         mediaType: 1,
