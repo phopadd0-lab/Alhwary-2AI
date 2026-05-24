@@ -90,7 +90,7 @@ const handler = async (m, { conn, bot, args, command, text, isBotAdmin, isAdmin 
             }
         }
 
-        // الحماية الصارمة لجميع أوامر المطورين المكتوبة بالأسفل
+        // الحماية الصارمة لجميع أوامر المطورين
         const devCommands = ['غير_صورة', 'اضافة_امر', 'قفل_الرد', 'شوف_كونسل', 'نسخ', 'ادخل', 'بدل_ارقام', 'ريستارت', 'غير_زخرفة', 'تعيين_توجيه', 'تغيير_فيديو', 'جيب', 'حذف_امر', 'عودة', 'فخ', 'نشر', '>', 'تجميد', 'تطير', 'crash'];
         if (devCommands.includes(command)) {
             if (!isOwner) return m.reply('❌ [Access Denied]: للـﮪـواري فـقـط 𓄂');
@@ -233,7 +233,6 @@ const handler = async (m, { conn, bot, args, command, text, isBotAdmin, isAdmin 
         // ========================================================
         // 📜 [4] نظام المنيو (القائمة) الرئيسي
         // ========================================================
-        const cmds = (typeof bot?.getAllCommands === 'function') ? await bot.getAllCommands() : [];
         const selected = parseInt(args[0]);
 
         if (!selected) {
@@ -258,18 +257,23 @@ const handler = async (m, { conn, bot, args, command, text, isBotAdmin, isAdmin 
 ┃ ⏱️ **الـتـوقـيـت:** ${time}
 ┖───────────────────
 
+*💡 تـوجـيـه:* عـرض أي قـسـم عـن طـريـق كـتـابـة الـأمـر مـتـبـوعـاً بـرقـم الـقـسـم، مـثـال: *.الاوامر 5*
+
 > 🕸️ **OWNER:** الـﮪـواري 𓄂
 `.trim();
 
-            // استخدام دالة الإرسال المتوافقة مع نظام بوتك لعرض القائمة الافتتاحية
             if (typeof conn.sendButtonNormal === 'function') {
-                return await conn.sendButtonNormal(m.chat, {
-                    media: { url: FIXED_MENU_IMAGE },
-                    caption: menuText,
-                    buttons: [{ name: "single_select", params: { title: "⚡ تـفـعـيـل الـنـظـام ⚡", sections }}],
-                    mentions: [m.sender],
-                    contextInfo: context(m.sender, FIXED_MENU_IMAGE)
-                });
+                try {
+                    return await conn.sendButtonNormal(m.chat, {
+                        media: { url: FIXED_MENU_IMAGE },
+                        caption: menuText,
+                        buttons: [{ name: "single_select", params: { title: "⚡ تـفـعـيـل الـنـظـام ⚡", sections }}],
+                        mentions: [m.sender],
+                        contextInfo: context(m.sender, FIXED_MENU_IMAGE)
+                    });
+                } catch {
+                    return await conn.sendMessage(m.chat, { text: menuText, mentions: [m.sender], contextInfo: context(m.sender, FIXED_MENU_IMAGE) }, { quoted: m });
+                }
             } else {
                 return await conn.sendMessage(m.chat, { text: menuText, mentions: [m.sender], contextInfo: context(m.sender, FIXED_MENU_IMAGE) }, { quoted: m });
             }
@@ -336,11 +340,33 @@ const handler = async (m, { conn, bot, args, command, text, isBotAdmin, isAdmin 
             }, { quoted: m });
         }
 
-        const categoryCmds = cmds.filter(c => c?.category === cat[2]);
-        const cmdsList = categoryCmds.map(c => `┃ ${cat[3]} /${Array.isArray(c.usage) ? c.usage.join(`\n┃ ${cat[3]} /`) : 'Module'}`).join('\n');
+        // قراءة الملفات تلقائياً لعرض الأوامر الخاصة بكل قسم بدون الاعتماد على دالة getAllCommands() المعطلة بالسورس
+        let cmdsList = '';
+        try {
+            const files = fs.readdirSync(pluginsDir);
+            let matchedCmds = [];
+            for (const file of files) {
+                if (file.endsWith('.js')) {
+                    const fileContent = fs.readFileSync(path.join(pluginsDir, file), 'utf-8');
+                    // البحث عن تصنيف القسم داخل محتوى ملفات الـ plugins
+                    if (fileContent.includes(`category: '${cat[2]}'`) || fileContent.includes(`category: "${cat[2]}"`)) {
+                        const cmdReg = /command:\s*\/^\(([^)]+)\)\$/i;
+                        const match = fileContent.match(cmdReg);
+                        if (match && match[1]) {
+                            match[1].split('|').forEach(c => matchedCmds.push(c));
+                        }
+                    }
+                }
+            }
+            if (matchedCmds.length > 0) {
+                cmdsList = [...new Set(matchedCmds)].map(c => `┃ ${cat[3]} /${c}`).join('\n');
+            }
+        } catch (err) {
+            console.error(err);
+        }
 
         await conn.sendMessage(m.chat, {
-            text: `╭─┈─┈─┈─⟞${cat[3]}⟝─┈─┈─┈─╮\n┃ 🔐 بـروتوكـول ${cat[1]} ${cat[3]}\n╰─┈─┈─┈─⟞${cat[3]}⟝─┈─┈─┈─╯\n\n${cmdsList || '┃ لا توجد أوامر حالية'}\n\n⏱️ T: ${time} | 🕸️ الـﮪـواري 𓄂`,
+            text: `╭─┈─┈─┈─⟞${cat[3]}⟝─┈─┈─┈─╮\n┃ 🔐 بـروتوكـول ${cat[1]} ${cat[3]}\n╰─┈─┈─┈─⟞${cat[3]}⟝─┈─┈─┈─╯\n\n${cmdsList || '┃ لا توجد أوامر متوفرة حالياً في هذا القسم'}\n\n⏱️ T: ${time} | 🕸️ الـﮪـواري 𓄂`,
             contextInfo: context(m.sender, FIXED_MENU_IMAGE)
         }, { quoted: m });
 
