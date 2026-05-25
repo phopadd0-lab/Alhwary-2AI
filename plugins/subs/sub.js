@@ -74,9 +74,9 @@ if (subBots.list().length >= 30) {
   }
 };
 
-run.command = ["ALHBOT"];
+run.command = ["تنصيب"];
 run.noSub = true;
-run.usage =  ["ALHBOT"];
+run.usage =  ["تنصيب"];
 run.category = "sub";
 export default run;
 
