@@ -37,7 +37,7 @@ const group = async (ctx, event, eventType) => {
             mentions: author ? [author, ...participants] : participants,
             newsletter: {
                 name: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
-                jid: '120363225356834044@newsletter'
+                jid: '201556853817@newsletter'
             },
             big: ["remove", "add"].includes(eventType)
         });
@@ -85,7 +85,7 @@ const access = async (msg, checkType, time) => {
             body: "𝐵𝑜𝑡 𝑎𝑙𝑒𝑟𝑡𝑠: 𝑅𝑒𝑎𝑑 𝑡𝒉𝑒 𝑚𝑒𝑠𝑠𝑎𝑔𝑒 𝑡𝑜 𝑙𝑒𝑎𝑟𝑛 𝑚𝑜𝑟𝑒",
             newsletter: {
                 name: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
-                jid: '120363225356834044@newsletter'
+                jid: '201556853817@newsletter'
             },
             big: false
         }, quoted);
