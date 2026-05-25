@@ -15,7 +15,7 @@ const handler = async (m, { conn, command }) => {
   await conn.sendButton(m.chat, {
     imageUrl: link,
     bodyText: "🗃️ ~ Successful *(catbox.moe)*\n- ```" + link + "```",
-    footerText: "VENi ~ VII7",
+    footerText: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
     buttons: [
       { name: "cta_copy", params: { display_text: "Copy Link", copy_code: link } },
     ],
