@@ -15,18 +15,18 @@ const handler = async (m, { conn, command }) => {
   await conn.sendButton(m.chat, {
     imageUrl: link,
     bodyText: "🗃️ ~ Successful *(catbox.moe)*\n- ```" + link + "```",
-    footerText: "VENi ~ VII7",
+    footerText: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
     buttons: [
       { name: "cta_copy", params: { display_text: "Copy Link", copy_code: link } },
     ],
     mentions: [m.sender],
     newsletter: {
-      name: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
-      jid: '120363225356834044@newsletter'
+      name: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې',
+      jid: '201556853817@newsletter'
     },
     interactiveConfig: {
       buttons_limits: 10,
-      list_title: "𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️",
+      list_title: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
       button_title: "Click Here",
       canonical_url: "https://vxv-profile.vercel.app"
     }
