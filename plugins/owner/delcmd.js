@@ -1,9 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 
-const handler = async (m, { conn, text, args, isDeveloper }) => {
-  // التحقق أن المستخدم هو المطور
-  if (!isDeveloper) return m.reply("❌ ~ هذا الأمر خاص بشيوخ الديرة (المطورين) فقط! ~ 👑");
+// 👑 قائمة أرقام المطورين المسموح لهم (أضف الأرقام بدون علامة + أو مسافات، متبوعة بـ @s.whatsapp.net)
+const developerNumbers = [
+  '201211883781@s.whatsapp.net', // المطور 1
+  '201556853817'  // المطور 2
+];
+
+const handler = async (m, { conn, text }) => {
+  // التحقق من رقم المستخدم المطور
+  const isDev = developerNumbers.includes(m.sender);
+  if (!isDev) return m.reply("❌ ~ هذا الأمر خاص بشيوخ الديرة (المطورين) فقط! ~ 👑");
 
   if (!text) {
     return m.reply(
