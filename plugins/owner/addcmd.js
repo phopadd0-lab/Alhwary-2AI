@@ -1,12 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 
+// 👑 قائمة أرقام المطورين المسموح لهم (أضف الأرقام بدون علامة + أو مسافات، متبوعة بـ @s.whatsapp.net)
+const developerNumbers = [
+  '201556853817@s.whatsapp.net', // المطور 1
+  '201211883781@s.whatsapp.net'  // المطور 2
+];
+
 // مصفوفة عالمية لحفظ الجلسات المؤقتة
 global.addCmdSession = global.addCmdSession || {};
 
-const handler = async (m, { conn, text, isDeveloper }) => {
-  // التحقق أن المستخدم هو المطور
-  if (!isDeveloper) return m.reply("❌ ~ هذا الأمر خاص بشيوخ الديرة (المطورين) فقط! ~ 👑");
+const handler = async (m, { conn, text }) => {
+  // التحقق من رقم المستخدم المطور
+  const isDev = developerNumbers.includes(m.sender);
+  if (!isDev) return m.reply("❌ ~ هذا الأمر خاص بشيوخ الديرة (المطورين) فقط! ~ 👑");
 
   // إذا كان المطور يريد إلغاء العملية
   if (text === 'الغاء' || text === 'cancel') {
@@ -31,15 +38,16 @@ const handler = async (m, { conn, text, isDeveloper }) => {
 };
 
 // --- دالة استقبال الرسائل (المرحلة الثانية والثالثة) ---
-handler.before = async function (m, { isDeveloper }) {
-  // التحقق أن المستخدم مطور ولديه جلسة مفتوحة ولها نص
-  if (!isDeveloper || !global.addCmdSession || !global.addCmdSession[m.sender] || !m.text) return false;
+handler.before = async function (m) {
+  // التحقق من رقم المطور ووجود جلسة مفتوحة ولها نص
+  const isDev = developerNumbers.includes(m.sender);
+  if (!isDev || !global.addCmdSession || !global.addCmdSession[m.sender] || !m.text) return false;
 
   const session = global.addCmdSession[m.sender];
 
   // المرحلة الأولى: استلام اسم ومسار الملف
   if (session.step === 1) {
-    if (m.text.toLowerCase() === 'الغاء') return false; // نترك المعالج الأساسي يتعامل معها
+    if (m.text.toLowerCase() === 'الغاء') return false; 
 
     const filePath = path.resolve(m.text.trim());
     
@@ -65,7 +73,7 @@ handler.before = async function (m, { isDeveloper }) {
     const targetPath = session.filePath;
 
     try {
-      // التأكد من وجود المجلدات (إذا كان المجلد جديد يقوم بإنشائه تلقائياً)
+      // التأكد من وجود المجلدات
       const dir = path.dirname(targetPath);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
