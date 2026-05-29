@@ -1,4 +1,3 @@
-.تعديل_امر plugins/auto/auto_reply.js
 export default async function before(m, { conn , bot }) {
   const triggers = {
     "السلام عليكم": ["*وعليكم السلام منور يغالي 🤎*", "*وعليكم السلام ورحمة الله وبركاته ❤️*"],
@@ -10,13 +9,10 @@ export default async function before(m, { conn , bot }) {
     "مساء النور": ["*مساء الورد*", "*مساء الفل*", "*الله نورك*"]
   };
 
-  if (!m.text) return false;
-  
-  const replies = triggers[m.text.trim()];
+  const replies = triggers[m.text];
   if (replies) {
     const ranReply = replies[Math.floor(Math.random() * replies.length)];
     m.reply(ranReply);
-    return true; // تم التعامل مع الرسالة بنجاح
   }
   
   return false;
