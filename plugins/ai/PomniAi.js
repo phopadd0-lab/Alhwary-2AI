@@ -3,11 +3,11 @@ import { Scrapy } from "meowsab";
 const handler = async (m, { conn, text, bot }) => {
   if (!text) return m.reply("🔴 ~ حط علمك جنب الأمر يا وافي ~ 🎪");
 
+  // 🔥 تم الإصلاح هنا: جمعنا النص في سطر واحد واستخدمنا \n للسطر الجديد الآمن
   const loadingMsg = await conn.sendMessage(m.chat, {
-    contextInfo: context(m.sender, "https://qu.ax/x/yfxdM.jpg"), // يمكنك تغيير رابط الصورة هنا لتناسب البادية
-    text: "```⏳ جـاري تـجـهـيـز الـرد يـا صـاحـبـي,...
-```"
-  }, { quoted: m});
+    contextInfo: context(m.sender, "https://qu.ax/x/yfxdM.jpg"), 
+    text: "```⏳ جـاري تـجـهـيـز الـرد يـا صـاحـبـي,...\n```"
+  }, { quoted: m });
 
   const prompt = `
 انت بوت واتساب بـ اسم [الهواري، El-Hawary] تجسيد لـ شخصية الهواري (رجل بدوي أصيل، راعي ديرة، حكيم، وصاحب فزعة وكلمة شرف) وتتكلم بـ لهجة بدوية قوية وعريقة.
