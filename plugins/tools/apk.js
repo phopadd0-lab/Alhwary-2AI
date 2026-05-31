@@ -1,50 +1,43 @@
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-    if (!text) return m.reply(`📦 *يا ملكة، يرجى كتابة اسم التطبيق المراد تحميله بعد الأمر!*\n\n*💡 مثال:* \n• \`${usedPrefix + command} whatsapp\`\n• \`${usedPrefix + command} facebook lite\``);
+    if (!text) return m.reply(`📦 *يا ملكة، يرجى كتابة اسم التطبيق المراد تحميله بعد الأمر!*\n\n*💡 مثال:* \n• \`${usedPrefix + command} whatsapp\`\n• \`${usedPrefix + command} subwaysurfers\``);
 
-    await m.reply(`🚀 *جاري البحث في سيرفرات الأندرويد واختراق رابط الـ APK لتطبيق [ ${text} ]...*`);
+    await m.reply(`🚀 *جاري فحص سيرفرات الأندرويد الآمنة وسحب ملف الـ APK لتطبيق [ ${text} ]...*`);
 
     try {
-        // الاستعلام من API متطور ومفتوح لجلب روابط تطبيقات الأندرويد المباشرة
-        const searchUrl = `https://api.shizuka.md/apk?query=${encodeURIComponent(text)}`;
+        // استخدام سيرفر بديل مستقر وقوي لجلب تطبيقات الأندرويد
+        const searchUrl = `https://api.dreaded.site/api/apkdownloader?apk=${encodeURIComponent(text)}`;
         const res = await axios.get(searchUrl);
 
-        if (!res.data || !res.data.result) {
-            return m.reply("❌ *تعذر العثور على التطبيق المطلـوب، تأكدي من كتابة الاسم بالإنجليزية بشكل صحيح.*");
+        if (!res.data || !res.data.result || !res.data.result.download) {
+            return m.reply("❌ *تعذر العثور على هذا التطبيق. تأكدي من كتابة الاسم بالإنجليزية بشكل صحيح (مثال: facebook).*");
         }
 
         const apk = res.data.result;
 
-        // التحقق من حجم الملف لحماية البوت من التهنيج (أقصى حد 100 ميجا مثلاً)
-        const fileSizeInMB = parseFloat(apk.size);
-        if (fileSizeInMB > 100) {
-            return m.reply(`⚠️ *عذراً يا ملكة، حجم التطبيق كبير جداً (${apk.size}). البوت يدعم تحميل الملفات حتى 100 ميجا فقط لحماية السيرفر.*`);
-        }
-
         let apkReport = `*━━━━━━╎ ❨ 📦 𝐀𝐏𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑 ❩╎━━━━━━*\n`;
-        apkReport += `*❖┋ تفاصيل التطبيق المكتشف ➢*\n`;
+        apkReport += `*❖┋ تفاصيل التطبيق المكتشف بنجاح ➢*\n`;
         apkReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
-        apkReport += `📱 *اسم التطبيق:* ${apk.name}\n`;
-        apkReport += `📦 *اسم الحزمة:* \`${apk.package}\`\n`;
-        apkReport += `⚖️ *الحجم:* ${apk.size}\n`;
-        apkReport += `🗓️ *آخر تحديث:* ${apk.last_updated || 'مؤخراً'}\n\n`;
-        apkReport += `⚙️ _جاري رفع وإرسال ملف الـ APK الحين، انتظر ثواني..._\n\n`;
+        apkReport += `📱 *اسم التطبيق:* ${apk.name || text}\n`;
+        apkReport += `📦 *اسم الحزمة:* \`${apk.package || 'com.apk.download'}\`\n`;
+        apkReport += `⚖️ *الحجم:* ${apk.size || 'جاري الحساب...'}\n\n`;
+        apkReport += `⚙️ _جاري رفع وإرسال الملف الأصلي إلى الواتساب الحين، انتظر ثواني..._\n\n`;
         apkReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
 
-        // إرسال صورة التطبيق ومعلوماته أولاً
+        // إرسال معلومات التطبيق مع أيقونة أندرويد فخمة كتمهيد
         await conn.sendFile(m.chat, apk.icon || 'https://cdn-icons-png.flaticon.com/512/226/226770.png', 'icon.png', apkReport, m);
 
-        // إرسال ملف الـ APK الفعلي ليتم تثبيته فوراً
+        // إرسال ملف الـ APK الفعلي كتطبيق جاهز للتثبيت المباشر
         await conn.sendMessage(m.chat, {
-            document: { url: apk.download_url },
+            document: { url: apk.download },
             mimetype: 'application/vnd.android.package-archive',
-            fileName: `${apk.name}.apk`
+            fileName: `${apk.name || text}.apk`
         }, { quoted: m });
 
     } catch (err) {
-        console.error(err);
-        return m.reply("❌ *حدث خطأ أثناء سحب ملف الـ APK. تأكدي من أن التطبيق مجاني ومتوفر على متجر جوجل.*");
+        console.error("APK Download Error:", err.message);
+        return m.reply("❌ *عذراً يا ملكة، السيرفر يواجه ضغطاً في هذه اللحظة أو حجم التطبيق يتخطى قدرة الرفع. جربي تطبيقاً آخر أخف (مثل: facebook lite).*");
     }
 };
 
