@@ -1,62 +1,93 @@
 import axios from 'axios';
-import { generateWAMessageFromContent } from "@whiskeysockets/baileys";
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-    if (!text) return m.reply(`🐙 *يا ملكة، يرجى كتابة اسم أو كلمة مفتاحية للبحث عن المستودعات في جيت هاب!* \n\n*💡 مثال:* \n• \`${usedPrefix + command} hawary-bot\``);
+    if (!text) return m.reply(`🐙 *يا ملكة، يرجى كتابة مسار المستودع بالكامل!* \n\n*💡 مثال:* \n• \`${usedPrefix + command} elhawary-developer/hawary-bot\``);
 
-    await m.reply(`🔍 *جاري البحث في جيت هاب عن المستودعات التي تحمل اسم [ ${text} ]...*`);
+    const args = text.trim().split('/');
+    
+    if (args.length >= 2) {
+        const username = args[0].trim();
+        const repo = args[1].trim();
+        await m.reply(`🛸 *جاري فحص المستودع وتفكيك بنية الملفات نصياً...*`);
 
-    try {
-        // البحث عن المستودعات باستخدام GitHub Search API الرسمي (يجلب أفضل 5 نتائج متطابقة)
-        const searchUrl = `https://api.github.com/search/repositories?q=${encodeURIComponent(text)}&per_page=5`;
-        const res = await axios.get(searchUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
-        });
+        try {
+            const repoContentUrl = `https://api.github.com/repos/${username}/${repo}/contents`;
+            const res = await axios.get(repoContentUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            
+            if (!res.data || !Array.isArray(res.data)) return m.reply("❌ *المسار خاطئ أو المستودع فارغ.*");
 
-        if (!res.data || !res.data.items || res.data.items.length === 0) {
-            return m.reply("❌ *لم يتم العثور على أي مستودعات بهذا الاسم. تأكدي من كلمة البحث.*");
+            let repoReport = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐒𝐎𝐔𝐑𝐂𝐄 ❩╎━━━━━━*\n`;
+            repoReport += `*❖┋ مستودع:* ${username} / ${repo} ➢*\n`;
+            repoReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
+            repoReport += `📂 *الملفات والأوامر الجاهزة للسحب:*\n\n`;
+
+            res.data.forEach(item => {
+                if (item.type === 'file') {
+                    repoReport += `📄 *الملف:* \`${item.name}\`\n`;
+                    repoReport += `• أمر سحب الكود: \`${usedPrefix}سحب_كود ${username}/${repo}/${item.name}\`\n\n`;
+                } else {
+                    repoReport += `📁 *مجلد:* \`${item.name}\`\n\n`;
+                }
+            });
+
+            repoReport += `*📥 رابط تحميل السورس كامل ZIP:*\n`;
+            repoReport += `https://github.com/IbrahimElhawary/test_rep/archive/refs/heads/main.zip\n\n`;
+            repoReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
+
+            return m.reply(repoReport);
+
+        } catch (err) {
+            return m.reply("❌ *فشل جلب ملفات المستودع، تأكدي من المسار.*");
         }
+    } else {
+        // فحص الملف الشخصي للمطور
+        const username = text.trim();
+        try {
+            const userUrl = `https://api.github.com/users/${username}`;
+            const res = await axios.get(userUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            const data = res.data;
 
-        const repos = res.data.items;
+            let userReport = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐔𝐒𝐄𝐑 ❩╎━━━━━━*\n`;
+            userReport += `*👤 المطور:* ${data.name || 'غير معلن'} | *🆔 اليوزر:* ${data.login}\n`;
+            userReport += `• المشاريع العامة: ${data.public_repos} | • المتابِعين: ${data.followers}\n\n`;
+            userReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
 
-        let report = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐒𝐄𝐀𝐑𝐂𝐇 ❩╎━━━━━━*\n`;
-        report += `*❖┋ نتائج البحث عن:* [ ${text} ] ➢*\n`;
-        report += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
-        report += `✨ *المستودعات المكتشفة حية الآن:*\n\n`;
-
-        repos.forEach((item, index) => {
-            report += `*${index + 1}️⃣ - ${item.full_name}*\n`;
-            report += `⭐ النجوم: ${item.stargazers_count} | 💻 اللغة: ${item.language || 'غير محددة'}\n`;
-            report += `📝 الوصف: ${item.description || 'لا يوجد وصف متاح.'}\n\n`;
-        });
-
-        report += `⚙️ _اضغطي على الأزرار التفاعلية أدناه لتصفح وفحص ملفات أي مستودع فوراً!_`;
-
-        // 🔘 بناء الأزرار التفاعلية للمستودعات التي ظهرت في البحث لتسهيل الاختيار
-        const buttons = repos.map((item) => ({
-            buttonId: `${usedPrefix}جيت ${item.full_name}`,
-            buttonText: { displayText: `📂 تصفح: ${item.name}` },
-            type: 1
-        }));
-
-        const buttonMessage = {
-            text: report,
-            footer: `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*\n> _نظام البحث الذكي عن السورسات_ ⚡`,
-            buttons: buttons,
-            headerType: 1
-        };
-
-        const msgGenerated = generateWAMessageFromContent(m.chat, { buttonsMessage: buttonMessage }, { quoted: m });
-        return await conn.relayMessage(m.chat, msgGenerated.message, { messageId: msgGenerated.key.id });
-
-    } catch (err) {
-        console.error(err);
-        return m.reply("❌ *حدث خطأ أثناء الاتصال بخوادم جيت هاب. جربي مرة أخرى لاحقاً.*");
+            if (data.avatar_url) return conn.sendFile(m.chat, data.avatar_url, 'avatar.jpg', userReport, m);
+            return m.reply(userReport);
+        } catch (err) {
+            return m.reply("❌ *لم يتم العثور على الحساب.*");
+        }
     }
 };
 
-handler.help = ['بحث_جيت', 'searchrepo'];
+// المحرك الخفي لقراءة كود الملف عند كتابة أمر السحب
+handler.before = async (m, { conn }) => {
+    if (!m.text || !m.text.startsWith('.سحب_كود')) return;
+    const pathData = m.text.replace('.سحب_كود', '').trim().split('/');
+    if (pathData.length < 3) return;
+
+    const username = pathData[0];
+    const repo = pathData[1];
+    const filename = pathData[2];
+
+    try {
+        const fileRawUrl = `https://raw.githubusercontent.com/${username}/${repo}/main/${filename}`;
+        const fileRes = await axios.get(fileRawUrl).catch(async () => {
+            return await axios.get(`https://raw.githubusercontent.com/${username}/${repo}/master/${filename}`);
+        });
+
+        if (fileRes && fileRes.data) {
+            let codeContent = typeof fileRes.data === 'object' ? JSON.stringify(fileRes.data, null, 2) : fileRes.data;
+            if (codeContent.length > 4000) codeContent = codeContent.slice(0, 4000) + "\n\n... (الكود طويل جداً)";
+            return m.reply(`📄 *كود الملف [ ${filename} ] :*\n\`\`\`javascript\n${codeContent}\n\`\`\``);
+        }
+    } catch (e) {
+        return m.reply("❌ *تعذر قراءة محتوى الملف الحين.*");
+    }
+};
+
+handler.help = ['جيت'];
 handler.tags = ['tools'];
-handler.command = ['1بحث_جيت', 'جيت', 'searchrepo', 'srepo'];
+handler.command = ['جيت', 'جيت_هاب', 'سحب_كود'];
 
 export default handler;
