@@ -1,93 +1,82 @@
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-    if (!text) return m.reply(`🐙 *يا ملكة، يرجى كتابة مسار المستودع بالكامل!* \n\n*💡 مثال:* \n• \`${usedPrefix + command} elhawary-developer/hawary-bot\``);
+    if (!text) return m.reply(`🐙 *يا ملكة، يرجى كتابة اسم حساب جيت هاب أو مسار المستودع!* \n\n*💡 مثال:* \n• \`${usedPrefix + command} baileys\``);
 
     const args = text.trim().split('/');
     
+    // 1️⃣ الحالة الأولى: لو كتبتي مسار مستودع محدد (User/Repo)
     if (args.length >= 2) {
         const username = args[0].trim();
         const repo = args[1].trim();
-        await m.reply(`🛸 *جاري فحص المستودع وتفكيك بنية الملفات نصياً...*`);
+        await m.reply(`🛸 *جاري تجهيز رابط التحميل المضغوط للسورس [ ${repo} ]...*`);
 
-        try {
-            const repoContentUrl = `https://api.github.com/repos/${username}/${repo}/contents`;
-            const res = await axios.get(repoContentUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-            
-            if (!res.data || !Array.isArray(res.data)) return m.reply("❌ *المسار خاطئ أو المستودع فارغ.*");
+        let repoReport = `*━━━━━━╎ ❨ 📦 𝐆𝐈𝐓𝐇𝐔𝐁 𝐙𝐈𝐏 ❩╎━━━━━━*\n`;
+        repoReport += `*❖┋ تحميل السورس المضغوط كاملاً ➢*\n`;
+        repoReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
+        repoReport += `🚀 *المستودع المستهدف:* \`${username}/${repo}\`\n\n`;
+        repoReport += `📥 *اضغطي على الرابط أدناه للتحميل المباشر فوراً:*\n`;
+        repoReport += `https://github.com/${username}/${repo}/archive/refs/heads/main.zip\n`;
+        repoReport += `_(إذا لم يعمل الرابط أعلاه، جربي رابط السيرفر الاحتياطي):_\n`;
+        repoReport += `https://github.com/${username}/${repo}/archive/refs/heads/master.zip\n\n`;
+        repoReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n`;
+        repoReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
 
-            let repoReport = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐒𝐎𝐔𝐑𝐂𝐄 ❩╎━━━━━━*\n`;
-            repoReport += `*❖┋ مستودع:* ${username} / ${repo} ➢*\n`;
-            repoReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
-            repoReport += `📂 *الملفات والأوامر الجاهزة للسحب:*\n\n`;
-
-            res.data.forEach(item => {
-                if (item.type === 'file') {
-                    repoReport += `📄 *الملف:* \`${item.name}\`\n`;
-                    repoReport += `• أمر سحب الكود: \`${usedPrefix}سحب_كود ${username}/${repo}/${item.name}\`\n\n`;
-                } else {
-                    repoReport += `📁 *مجلد:* \`${item.name}\`\n\n`;
-                }
-            });
-
-            repoReport += `*📥 رابط تحميل السورس كامل ZIP:*\n`;
-            repoReport += `https://github.com/IbrahimElhawary/test_rep/archive/refs/heads/main.zip\n\n`;
-            repoReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
-
-            return m.reply(repoReport);
-
-        } catch (err) {
-            return m.reply("❌ *فشل جلب ملفات المستودع، تأكدي من المسار.*");
-        }
-    } else {
-        // فحص الملف الشخصي للمطور
+        return m.reply(repoReport);
+    } 
+    
+    // 2️⃣ الحالة الثانية (طلبكِ المخصوص): جلب الحساب ومعه روابط الـ ZIP لكل مشاريعه مباشرة
+    else {
         const username = text.trim();
+        await m.reply(`🕵️‍♂️ *جاري فحص حساب [ ${username} ] وسحب روابط الملفات المضغوطة...*`);
+
         try {
+            // جلب بيانات الحساب الشخصي
             const userUrl = `https://api.github.com/users/${username}`;
-            const res = await axios.get(userUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-            const data = res.data;
+            const userRes = await axios.get(userUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            const userData = userRes.data;
 
-            let userReport = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐔𝐒𝐄𝐑 ❩╎━━━━━━*\n`;
-            userReport += `*👤 المطور:* ${data.name || 'غير معلن'} | *🆔 اليوزر:* ${data.login}\n`;
-            userReport += `• المشاريع العامة: ${data.public_repos} | • المتابِعين: ${data.followers}\n\n`;
-            userReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
+            // جلب قائمة مستودعات المطور (أول 5 مشاريع عامة)
+            const reposUrl = `https://api.github.com/users/${username}/repos?per_page=5&sort=updated`;
+            const reposRes = await axios.get(reposUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            const reposData = reposRes.data;
 
-            if (data.avatar_url) return conn.sendFile(m.chat, data.avatar_url, 'avatar.jpg', userReport, m);
-            return m.reply(userReport);
+            let report = `*━━━━━━╎ ❨ 🐙 𝐆𝐈𝐓𝐇𝐔𝐁 𝐔𝐒𝐄𝐑 ❩╎━━━━━━*\n`;
+            report += `*👤 المطور:* ${userData.name || 'غير معلن'} | *🆔 اليوزر:* ${userData.login}\n`;
+            report += `• المشاريع العامة: ${userData.public_repos} | • المتابِعين: ${userData.followers}\n`;
+            report += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
+            report += `📦 *روابط تحميل المشاريع جاهزة ومضغوطة (ZIP):*\n\n`;
+
+            if (reposData.length === 0) {
+                report += `❗ لا توجد مستودعات عامة متاحة لهذا المستخدم حالياً.\n`;
+            } else {
+                reposData.forEach((repo, index) => {
+                    report += `*${index + 1}️⃣ - السورس:* \`${repo.name}\`\n`;
+                    report += `• ⭐ النجوم: ${repo.stargazers_count} | 💻 اللغة: ${repo.language || 'غير محددة'}\n`;
+                    report += `• 📥 *رابط التحميل المباشر ZIP:*\n`;
+                    report += `https://github.com/${username}/${repo.name}/archive/refs/heads/main.zip\n\n`;
+                });
+            }
+
+            report += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n`;
+            report += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*\n> _نظام جلب السورسات المضغوطة طيران_ ⚡`;
+
+            // إرسال التقرير مع الصورة الشخصية للمطور وروابط التحميل المباشرة تحتها
+            if (userData.avatar_url) {
+                return conn.sendFile(m.chat, userData.avatar_url, 'avatar.jpg', report, m);
+            } else {
+                return m.reply(report);
+            }
+
         } catch (err) {
-            return m.reply("❌ *لم يتم العثور على الحساب.*");
+            console.error(err);
+            return m.reply("❌ *لم يتم العثور على هذا الحساب، أو حدث خطأ أثناء الاتصال بجيت هاب الحين.*");
         }
-    }
-};
-
-// المحرك الخفي لقراءة كود الملف عند كتابة أمر السحب
-handler.before = async (m, { conn }) => {
-    if (!m.text || !m.text.startsWith('.سحب_كود')) return;
-    const pathData = m.text.replace('.سحب_كود', '').trim().split('/');
-    if (pathData.length < 3) return;
-
-    const username = pathData[0];
-    const repo = pathData[1];
-    const filename = pathData[2];
-
-    try {
-        const fileRawUrl = `https://raw.githubusercontent.com/${username}/${repo}/main/${filename}`;
-        const fileRes = await axios.get(fileRawUrl).catch(async () => {
-            return await axios.get(`https://raw.githubusercontent.com/${username}/${repo}/master/${filename}`);
-        });
-
-        if (fileRes && fileRes.data) {
-            let codeContent = typeof fileRes.data === 'object' ? JSON.stringify(fileRes.data, null, 2) : fileRes.data;
-            if (codeContent.length > 4000) codeContent = codeContent.slice(0, 4000) + "\n\n... (الكود طويل جداً)";
-            return m.reply(`📄 *كود الملف [ ${filename} ] :*\n\`\`\`javascript\n${codeContent}\n\`\`\``);
-        }
-    } catch (e) {
-        return m.reply("❌ *تعذر قراءة محتوى الملف الحين.*");
     }
 };
 
 handler.help = ['جيت'];
 handler.tags = ['tools'];
-handler.command = ['جيت', 'جيت_هاب', 'سحب_كود'];
+handler.command = ['جيت', 'جيت_هاب', 'git', 'github'];
 
 export default handler;
