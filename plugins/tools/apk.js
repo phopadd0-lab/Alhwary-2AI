@@ -1,47 +1,66 @@
+import cheerio from 'cheerio';
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-    if (!text) return m.reply(`📦 *يا ملكة، يرجى كتابة اسم التطبيق المراد تحميله بعد الأمر!*\n\n*💡 مثال:* \n• \`${usedPrefix + command} whatsapp\`\n• \`${usedPrefix + command} subwaysurfers\``);
+    if (!text) return m.reply(`📦 *يا ملكة، يرجى كتابة اسم التطبيق المراد تحميله بعد الأمر!*\n\n*💡 مثال:* \n• \`${usedPrefix + command} whatsapp\`\n• \`${usedPrefix + command} facebook lite\``);
 
-    await m.reply(`🚀 *جاري فحص سيرفرات الأندرويد الآمنة وسحب ملف الـ APK لتطبيق [ ${text} ]...*`);
+    await m.reply(`🚀 *جاري فحص محرك APKPure وسحب التطبيق الأصلي لـ [ ${text} ]...*`);
 
     try {
-        // استخدام سيرفر بديل مستقر وقوي لجلب تطبيقات الأندرويد
-        const searchUrl = `https://api.dreaded.site/api/apkdownloader?apk=${encodeURIComponent(text)}`;
-        const res = await axios.get(searchUrl);
+        // 1️⃣ البحث عن التطبيق داخل موقع APKPure الرسمي
+        const searchUrl = `https://apkpure.com/ar/search?q=${encodeURIComponent(text)}`;
+        const searchRes = await axios.get(searchUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        
+        const $ = cheerio.load(searchRes.data);
+        const firstResult = $('.search-res .first-item a').attr('href') || $('.da a').attr('href');
 
-        if (!res.data || !res.data.result || !res.data.result.download) {
-            return m.reply("❌ *تعذر العثور على هذا التطبيق. تأكدي من كتابة الاسم بالإنجليزية بشكل صحيح (مثال: facebook).*");
+        if (!firstResult) {
+            return m.reply("❌ *تعذر العثور على التطبيق في محرك البحث. تأكدي من كتابة الاسم بالإنجليزية بشكل صحيح.*");
         }
 
-        const apk = res.data.result;
+        // 2️⃣ الدخول لصفحة التحميل المباشر للتطبيق
+        const appUrl = firstResult.startsWith('http') ? firstResult : `https://apkpure.com${firstResult}`;
+        const downloadPageUrl = `${appUrl}/download?from=details`;
+        
+        const downloadRes = await axios.get(downloadPageUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        
+        const $$ = cheerio.load(downloadRes.data);
+        const downloadLink = $$('a.download-start-btn').attr('href') || $$('#download_link').attr('href');
 
-        let apkReport = `*━━━━━━╎ ❨ 📦 𝐀𝐏𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑 ❩╎━━━━━━*\n`;
-        apkReport += `*❖┋ تفاصيل التطبيق المكتشف بنجاح ➢*\n`;
+        if (!downloadLink) {
+            return m.reply("❌ *فشل استخراج رابط التحميل المباشر من السيرفر الحين.*");
+        }
+
+        // 3️⃣ استخراج بيانات واضحة للتطبيق لعرضها في الشات
+        const appName = $$('.title-like h1').text() || text;
+
+        let apkReport = `*━━━━━━╎ ❨ 📦 𝐀𝐏𝐊𝐏𝐔𝐑𝐄 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 ❩╎━━━━━━*\n`;
+        apkReport += `*❖┋ سحب التطبيق مباشرة من محرك البحث العالمي ➢*\n`;
         apkReport += `*━━━━─━━━─━━━ 🍷 ━━━─━━━─━━━*\n\n`;
-        apkReport += `📱 *اسم التطبيق:* ${apk.name || text}\n`;
-        apkReport += `📦 *اسم الحزمة:* \`${apk.package || 'com.apk.download'}\`\n`;
-        apkReport += `⚖️ *الحجم:* ${apk.size || 'جاري الحساب...'}\n\n`;
-        apkReport += `⚙️ _جاري رفع وإرسال الملف الأصلي إلى الواتساب الحين، انتظر ثواني..._\n\n`;
+        apkReport += `📱 *اسم التطبيق:* ${appName.trim()}\n`;
+        apkReport += `⚙️ _جاري تحميل الملف من السيرفر الأصلي ورفعه للواتساب الحين، انتظر قليلاً..._\n\n`;
         apkReport += `*⌯︙ الـهـوارِي بـوت ~ 𝐄𝐋-𝐇𝐀𝐖𝐀𝐑𝐘*`;
 
-        // إرسال معلومات التطبيق مع أيقونة أندرويد فخمة كتمهيد
-        await conn.sendFile(m.chat, apk.icon || 'https://cdn-icons-png.flaticon.com/512/226/226770.png', 'icon.png', apkReport, m);
+        await m.reply(apkReport);
 
-        // إرسال ملف الـ APK الفعلي كتطبيق جاهز للتثبيت المباشر
+        // 4️⃣ إرسال ملف الـ APK الفعلي القادم من سيرفر APKPure مباشرة
         await conn.sendMessage(m.chat, {
-            document: { url: apk.download },
+            document: { url: downloadLink },
             mimetype: 'application/vnd.android.package-archive',
-            fileName: `${apk.name || text}.apk`
+            fileName: `${text}.apk`
         }, { quoted: m });
 
     } catch (err) {
-        console.error("APK Download Error:", err.message);
-        return m.reply("❌ *عذراً يا ملكة، السيرفر يواجه ضغطاً في هذه اللحظة أو حجم التطبيق يتخطى قدرة الرفع. جربي تطبيقاً آخر أخف (مثل: facebook lite).*");
+        console.error("APKPure Scraping Error:", err.message);
+        return m.reply("❌ *عذراً يا ملكة، واجه السيرفر مشكلة أثناء سحب الملف. جربي تطبيقاً آخر خفيفاً ومتاحاً للجميع.*");
     }
 };
 
-handler.help = ['تحميل_تطبيق', 'apk'];
+handler.help = ['تطبيق', 'apk'];
 handler.tags = ['tools'];
 handler.command = ['تحميل_تطبيق', 'تطبيق', 'apk', 'اي_بي_كي'];
 
