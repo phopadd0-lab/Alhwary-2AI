@@ -3,7 +3,7 @@ import axios from 'axios';
 let handler = async (m, { conn, text, command }) => {
     // لو كتبتي الكلمة لوحدها بدون كلام، يرد بفخامة
     if (!text) {
-        await conn.sendMessage(m.chat, { react: { text: '', key: m.key } });
+        await conn.sendMessage(m.chat, { react: { text: '👌🏼', key: m.key } });
         return m.reply(`😏 اؤمريني يا ملكة! اخلصي وعايزة تقولي إيه؟\n*مثال:* \`${command} قولي نكتة\``);
     }
 
