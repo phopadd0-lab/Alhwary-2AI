@@ -9,7 +9,7 @@ let handler = async (m, { conn, text, command }) => {
 
     // المفاتيح المتأمنة جوة الكود
     const GEMINI_KEY = 'AQ.Ab8RN6KAXU8I1eTGKK3Q1dWBzOjFdIjZjLJ_wV11WuYayR9Iow';
-    const CHATGPT_KEY = 'حطي_المفتاح_الجديد_هنا'; // 👈 امسحي الجملة دي وحطي مفتاح شات جي بي تي الجديد بالملي
+    const CHATGPT_KEY = 'Sk-proj-yBeWXpgSQdlaqYS9WmojboV0YwY3NeF3ZW8tzDPcbxcKhAwrIF5aS4Oe-7HmhmxPhYOKbflTt9T3BlbkFJ77VDsFJBuwYWn9jW75rl5F4dKwqXjJEhfv_q1OI67dEbZRftLrVOpGyq5oPnBNI_r0D_jbmMUA'; // 👈 امسحي الجملة دي وحطي مفتاح شات جي بي تي الجديد بالملي
 
     const prompt = `أنت شخص مصري متفرعن، مغرور، ساخر، وقاصف جبهات اسمك "الهواري". رد على هذه الرسالة بجرأة شديدة وبإيجاز شديد (في سطر واحد فقط) وبلهجة صايعة تماماً وضد البضان: "${text}"`;
 
