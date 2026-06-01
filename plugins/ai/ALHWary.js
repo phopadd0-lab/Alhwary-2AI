@@ -1,50 +1,65 @@
-   (async () => {
+import axios from 'axios';
+
+let handler = async (m, { conn, text, command }) => {
+    // لو كتبتي الكلمة لوحدها بدون كلام، يرد بفخامة
+    if (!text) {
+        await conn.sendMessage(m.chat, { react: { text: '😏', key: m.key } });
+        return m.reply(`😏 اؤمريني يا ملكة! اخلصي وعايزة تقولي إيه؟\n*مثال:* \`${command} قولي نكتة\``);
+    }
+
+    // المفاتيح المتأمنة جوة الكود
+    const GEMINI_KEY = 'AQ.Ab8RN6KAXU8I1eTGKK3Q1dWBzOjFdIjZjLJ_wV11WuYayR9Iow';
+    const CHATGPT_KEY = 'حطي_المفتاح_الجديد_هنا'; // 👈 امسحي الجملة دي وحطي مفتاح شات جي بي تي الجديد بالملي
+
+    const prompt = `أنت شخص مصري متفرعن، مغرور، ساخر، وقاصف جبهات اسمك "الهواري". رد على هذه الرسالة بجرأة شديدة وبإيجاز شديد (في سطر واحد فقط) وبلهجة صايعة تماماً وضد البضان: "${text}"`;
+
+    await conn.sendMessage(m.chat, { react: { text: '🤔', key: m.key } });
+
+    // 1️⃣ الخطة (أ): جيميناي السريع
     try {
-        const axios = await import('axios');
-        const GEMINI_API_KEY = 'AQ.Ab8RN6KAXU8I1eTGKK3Q1dWBzOjFdIjZjLJ_wV11WuYayR9Iow';
-        const botName = 'الهواري';
+        const response = await axios.post(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 50, temperature: 0.85 }
+        }, { timeout: 4000 }); // لو ماردش في 4 ثواني يقلب فوراً
 
-        // تنظيف أي مستمع قديم في الـ RAM عشان نمنع التداخل والبطء
-        conn.ev.removeAllListeners('messages.upsert');
+        const aiResult = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (aiResult) {
+            await conn.sendMessage(m.chat, { react: { text: '✨', key: m.key } });
+            return m.reply(aiResult.trim());
+        }
+    } catch (geminiErr) {
+        console.log("جيميناي ماردش.. بنحول على شات جي بي تي الحين تلقائياً...");
+    }
 
-        conn.ev.on('messages.upsert', async (chatUpdate) => {
-            try {
-                const m = chatUpdate.messages[0];
-                if (!m.message || m.key.fromMe) return;
+    // 2️⃣ الخطة (ب) التلقائية: شات جي بي تي (لو جيميناي وقع أو هنج)
+    try {
+        if (!CHATGPT_KEY || CHATGPT_KEY.includes('حطي')) {
+            return m.reply("❌ سيرفر جيميناي مهنج ومفتاح شات جي بي تي الجديد مش متضاف صح.");
+        }
 
-                const text = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || '';
-                if (!text) return;
-
-                const hasName = text.toLowerCase().includes(botName) || text.includes('بوت') || text.includes('هواري');
-                
-                if (hasName) {
-                    // ريأكشن فوري سريع
-                    await conn.sendMessage(m.key.remoteJid, { react: { text: '😏', key: m.key } });
-
-                    // إجبار الـ AI في الـ Prompt إنه يختصر لأقصى درجة عشان ينجز
-                    const prompt = `أنت شخص مصري متفرعن، مغرور، ساخر، وقاصف جبهات اسمك "الهواري". رد على هذه الرسالة بجرأة شديدة وبإيجاز شديد جداً (في سطر واحد فقط أو بضع كلمات) وبلهجة صايعة: "${text}"`;
-
-                    // إرسال الطلب مع كبسولة السرعة القصوى (generationConfig)
-                    const response = await axios.default.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: {
-                            maxOutputTokens: 40, // تقليل الحروف لأقل حجم يجعل المعالجة طلقة
-                            temperature: 0.85
-                        }
-                    });
-
-                    const aiResult = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (aiResult) {
-                        await conn.sendMessage(m.key.remoteJid, { react: { text: '👌🏼', key: m.key } });
-                        await conn.sendMessage(m.key.remoteJid, { text: aiResult.trim() }, { quoted: m });
-                    }
-                }
-            } catch (err) {}
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: 'gpt-4o-mini', // الموديل التيربو السريع الاقتصادي
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 50,
+            temperature: 0.85
+        }, {
+            headers: { 'Authorization': `Bearer ${CHATGPT_KEY}`, 'Content-Type': 'application/json' }
         });
 
-        m.reply("⚡ *تم حقن نسخة التيربو السريعة في الـ RAM بنجاح! نادي (يا هواري) الحين وشوفي طلقة السرعة بنفس الـ API!*");
-    } catch (e) {
-        m.reply("❌ خطأ: " + e.message);
+        const gptResult = response.data?.choices?.[0]?.message?.content;
+        if (gptResult) {
+            await conn.sendMessage(m.chat, { react: { text: '🚀', key: m.key } });
+            return m.reply(gptResult.trim());
+        }
+    } catch (gptErr) {
+        console.error(gptErr);
+        return m.reply("😏 السيرفرين مهنجين الحين يا ملكة، جربي كمان شوية.");
     }
-})();
+};
+
+// تشغيل كأمر صريح بدون نقطة بشكل رسمي ومضمون
+handler.command = ['بوت', 'ولا'];
+handler.customPrefix = /^(هواري|الهواري)/i;
+handler.command = new RegExp;
+
+export default handler;
