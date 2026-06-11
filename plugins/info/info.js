@@ -53,9 +53,9 @@ const handler = async (m, { conn, bot, config }) => {
 
 ——> *الـمـالـكـيـن 👑*
 - *العدد:* \`${bot.owners?.length || 0}\`
-- *الرئيسي:* \`${bot.owners?.[0]?.name || 'VA'} (${bot.owners?.[0]?.jid?.split('@')[0] || 'لا يوجد'})\`
+- *الرئيسي:* \`${bot.owners?.[0]?.name || '𝐴𝐿𝐻𝑊𝐴𝑅𝑌'} (${bot.owners?.[0]?.jid?.split('@')[0] || 'لا يوجد'})\`
 
-> *_VII7 BOT SYSTEM_*`;
+> 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 BOT SYSTEM_*`;
 
   await conn.sendMessage(m.chat, {
     text: msg,
@@ -72,12 +72,12 @@ const context = (jid, img) => ({
     isForwarded: true,
     forwardingScore: 1,
     forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363225356834044@newsletter',
-        newsletterName: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
+        newsletterJid: '201556853817@newsletter',
+        newsletterName: '‌🇦‌🇱‌🇭‌🇼‌🇦‌🇷‌🇾',
         serverMessageId: 0
     },
     externalAdReply: {
-        title: "𝐏𝐎𝐌𝐍𝐈-𝐀𝐈 🎪 | 𝐁𝐨𝐭 𝐢𝐬 𝐛𝐮𝐢𝐥𝐭 𝐨𝐧 𝐭𝐡𝐞 𝐖𝐒/𝐕𝐈𝐈 𝐟𝐫𝐚𝐦𝐞𝐰𝐨𝐫𝐤",
+        title: "‌🇦‌🇱‌🇭‌🇼‌🇦‌🇷‌🇾",
         body: "𝚆𝚑𝚊𝚝𝚜𝙰𝚙𝚙 𝚋𝚘𝚝 𝚝𝚑𝚊𝚝 𝚒𝚜 𝚎𝚊𝚜𝚢 𝚝𝚘 𝚖𝚘𝚍𝚒𝚏𝚢 𝚊𝚗𝚍 𝚟𝚎𝚛𝚢 𝚏𝚊𝚜𝚝",
         thumbnailUrl: img,
         sourceUrl: '',
