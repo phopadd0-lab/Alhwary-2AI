@@ -25,5 +25,5 @@ let user = async (m, { args, command, text, conn }) => {
     }
 };
 
-user.command = ['لمطور','id'];
+user.command = ['لمطور','iD'];
 export default user;
