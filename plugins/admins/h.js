@@ -39,7 +39,7 @@ const h =  async (m, { text, bot, conn }) => {
 
 h.usage = ["مخفي"]
 h.category = "admin";
-h.command = ['مخفي', 'h']
+h.command = ['مخفي', '']
 h.group = true;
 h.admin = true;
 h.usePrefix = false
