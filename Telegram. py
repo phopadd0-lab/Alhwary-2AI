@@ -1,0 +1,101 @@
+import telebot
+import os
+import subprocess
+
+# 🔑 التوكن الخاص ببوتكِ
+BOT_TOKEN = '7910901014:AAGnHUMgwXH5Tn5zgOgk4jCC0FCYGeujUFo'
+
+# 👑 الحماية المطلقة: ضعي رقم الآي دي (Telegram ID) الخاص بكِ هنا الحين
+# (يمكنكِ معرفة الآي دي الخاص بكِ عبر إرسال أي رسالة لبوت @userinfobot)
+ADMIN_ID = 6979648492  # استبدلي هذا الرقم برقم حسابكِ الحقيقي
+
+bot = telebot.TeleBot(BOT_TOKEN)
+
+# 🛑 دالة للتحقق هل المستخدم هو المطور (أنتِ) أم لا
+def is_admin(message):
+    return message.from_user.id == ADMIN_ID
+
+# 🟢 رسالة الترحيب والتعليمات
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    if not is_admin(message):
+        bot.reply_to(message, "❌ عذراً، هذا البوت مخصص لإدارة السيرفر من قبل المطور فقط.")
+        return
+        
+    welcome_text = (
+        f"👑 أهلاً بكِ يا ملكة في لوحة تحكم السيرفر الحين!\n\n"
+        f"🛠️ *الخصائص المتاحة:* \n"
+        f"1️⃣ لتنفيذ أمر في السيرفر: اكتبِ `/cmd` متبوعاً بالأمر.\n"
+        f"   • _مثال:_ `/cmd ls` أو `/cmd pm2 status`\n"
+        f"2️⃣ لرفع أي ملف: قومي بإرسال الملف (Document) مباشرة للشات وسيتم حفظه في مجلد مشروعكِ فوراً."
+    )
+    bot.reply_to(message, welcome_text, parse_mode='Markdown')
+
+# 💻 1️⃣ تنفيذ أوامر لينكس على الاستضافة عن بُعد
+@bot.message_handler(commands=['cmd'])
+def execute_command(message):
+    if not is_admin(message):
+        return
+
+    # استخراج الأمر البرمجي من النص
+    command = message.text.replace('/cmd', '').strip()
+    
+    if not command:
+        bot.reply_to(message, "❌ يرجى كتابة الأمر بعد الكود. مثال:\n`/cmd free -m`")
+        return
+
+    status_msg = bot.reply_to(message, "⏳ جاري تنفيذ الأمر على الاستضافة الحين...")
+
+    try:
+        # تشغيل الأمر وسحب النتيجة (Output)
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout, stderr = process.communicate(timeout=30) # حد أقصى للتنفيذ 30 ثانية لعدم تعليق السيرفر
+
+        response = ""
+        if stdout:
+            response += f"✅ *المخرجات (Output):*\n```\n{stdout}\n```\n"
+        if stderr:
+            response += f"⚠️ *الأخطاء (Errors):*\n```\n{stderr}\n```"
+        if not stdout and not stderr:
+            response = "✅ تم تنفيذ الأمر بنجاح بدون مخرجات نصية."
+
+        # إرسال النتيجة للشات الحين
+        bot.edit_message_text(response, chat_id=message.chat.id, message_id=status_msg.message_id, parse_mode='Markdown')
+
+    except subprocess.TimeoutExpired:
+        bot.edit_message_text("❌ انتهت مهلة التنفيذ (Timeout) الحين المستغرقة للأمر.", chat_id=message.chat.id, message_id=status_msg.message_id)
+    except Exception as e:
+        bot.edit_message_text(f"❌ حدث خطأ برمي: {str(e)}", chat_id=message.chat.id, message_id=status_msg.message_id)
+
+# 📁 2️⃣ استقبال الملفات وحفظها في مجلد السيرفر مباشرة الحين
+@bot.message_handler(content_types=['document'])
+def handle_uploaded_file(message):
+    if not is_admin(message):
+        return
+
+    try:
+        file_info = bot.get_file(message.document.file_id)
+        file_name = message.document.file_name
+        
+        # تحديد المسار الذي ترغبين بحفظ الملفات فيه على السيرفر الحين
+        # (نقطة تعني المجلد الحالي الذي يعمل منه البوت)
+        save_directory = "./" 
+        file_path = os.path.join(save_directory, file_name)
+
+        status_msg = bot.reply_to(message, f"📥 جاري تحميل وتثبيت ملف `{file_name}` على الاستضافة...")
+
+        # تحميل الملف من سيرفرات تليجرام وكتابته في السيرفر عندكِ الحين
+        downloaded_file = bot.download_file(file_info.file_path)
+        with open(file_path, 'wb') as new_file:
+            new_file.write(downloaded_file)
+
+        bot.edit_message_text(f"🚀 تم رفع وحفظ الملف بنجاح الحين!\n📍 *المسار:* `{os.path.abspath(file_path)}`", 
+                              chat_id=message.chat.id, message_id=status_msg.message_id, parse_mode='Markdown')
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ فشل رفع الملف بسبب خطأ: {str(e)}")
+
+# تشغيل البوت لايف
+if __name__ == '__main__':
+    print("🖥️ Server Manager Bot is online and secure!")
+    bot.infinity_polling()
