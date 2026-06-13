@@ -47,7 +47,7 @@ END:VCARD`
       chat,
       {
         video: {
-          url: 'https://files.catbox.moe/4zh999.mp4'
+          url: 'https://i.top4top.io/m_38169gja30.mp4'
         },
         mimetype: 'video/mp4',
         caption: '🎬 ALHWARY 𝐕𝐈𝐃𝐄𝐎',
@@ -69,6 +69,7 @@ END:VCARD`
   }
 }
 
+// التعديل هنا: تم تغيير "تست" لتكون بالهاء وليس التاء المربوطة
 handler.command = ['تست']
 handler.help = ['تست']
 handler.tags = ['tools']
