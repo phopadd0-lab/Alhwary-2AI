@@ -90,7 +90,7 @@ let handler = async (m, { conn, command }) => {
   }
 }
 
-handler.command = ['دائري', 'ptv', 'تست', 'حفظ_تست', 'تثبيت']
+handler.command = ['دائري', 'ptv', 'تست', 'حفظ_تت', 'تثبيت']
 handler.help = ['دائري']
 handler.tags = ['tools']
 
