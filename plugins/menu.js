@@ -1,3 +1,5 @@
+import performanceNow from 'performance-now';
+
 const CATEGORIES = [
     [1, 'التـحـمـيـل', 'downloads', '↳'],
     [2, 'الـمـجـمـوعـات', 'group', '↳'],
@@ -15,12 +17,6 @@ const CATEGORIES = [
     [14, 'الـالــقــاب', 'nicknames', '↳'],
     [15, 'الـلـوجـوهــات', 'logos', '↳'],
     [16, 'تـغـيـر الاصـوات', 'voices', '↳'],
-    [17, 'الـحـمـايـه', 'protect', '↳'],
-    [18, 'الـتـرفـيـه', 'fun', '↳'],
-    [19, 'الـردود', 'reply', '↳'],
-    [20, 'الـتـوب', 'top', '↳'],
-    [21, 'الـمـيـمـز', 'memes', '↳'],
-    [22, 'الـاسـلامـيـات', 'islam', '↳'],
     [23, 'أخــرى', 'other', '↳']
 ];
 
@@ -34,12 +30,12 @@ const context = (jid) => ({
     isForwarded: true,
     forwardingScore: 1,
     forwardedNewsletterMessageInfo: {
-        newsletterJid: '𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻',
-        newsletterName: 'EL-HAWARY SYSTEM',
+        newsletterJid: '120363233343434@newsletter', 
+        newsletterName: 'EL-HAWARY SYSTEM | 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻',
         serverMessageId: -1
     },
     externalAdReply: {
-        title:"• EL-HAWARY CORE •",
+        title: "• EL-HAWARY CORE •",
         body: "SYSTEM: ONLINE",
         thumbnailUrl: IMAGE_URL,
         sourceUrl: '',
@@ -49,10 +45,12 @@ const context = (jid) => ({
 });
 
 async function handler(m, { conn, bot, command, args }) {
+    const startPing = performanceNow();
 
     if (/^\.$/i.test(m.text) || command === '.') {
+        const endPing = performanceNow() - startPing;
         await conn.sendMessage(m.chat, {
-            text: `// SYSTEM_STATUS: ACTIVE ✔`,
+            text: `// SYSTEM_STATUS: ACTIVE ✔ (${endPing.toFixed(0)}ms)`,
             contextInfo: context(m.sender)
         }, { quoted: m });
         return;
@@ -65,9 +63,7 @@ async function handler(m, { conn, bot, command, args }) {
     const hours = Math.floor(uptimeSeconds / 3600);
     const minutes = Math.floor((uptimeSeconds % 3600) / 60);
     const seconds = Math.floor(uptimeSeconds % 60);
-
-    const uptimeFormatted =
-        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const uptimeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     const date = now.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -75,7 +71,34 @@ async function handler(m, { conn, bot, command, args }) {
         day: '2-digit'
     });
 
+    const cmds = await bot.getAllCommands();
+
     if (!selected && !args[0]) {
+
+        const currentHour = now.getHours();
+        let greeting = "SYSTEM_BOOT";
+        if (currentHour >= 5 && currentHour < 12) greeting = "GOOD_MORNING";
+        else if (currentHour >= 12 && currentHour < 18) greeting = "GOOD_AFTERNOON";
+        else greeting = "GOOD_EVENING";
+
+        const usedRAM = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(0);
+        const totalRAM = 512; 
+        const ramPercentage = Math.min(Math.round((usedRAM / totalRAM) * 100), 100);
+        const ramBar = '█'.repeat(Math.floor(ramPercentage / 10)) + '░'.repeat(10 - Math.floor(ramPercentage / 10));
+
+        let userRank = "GUEST_USER";
+        const isOwner = bot.config?.owner?.some(o => o[0] === m.sender.split('@')[0]) || m.fromMe;
+        
+        if (isOwner) {
+            userRank = "ROOT_DEVELOPER";
+        } else if (m.isGroup) {
+            const groupMetadata = await conn.groupMetadata(m.chat).catch(() => ({}));
+            const participants = groupMetadata.participants || [];
+            const userAdmin = participants.find(p => p.id === m.sender);
+            if (userAdmin?.admin) userRank = "NETWORK_ADMIN";
+        }
+
+        const latency = performanceNow() - startPing;
 
         const sections = [{
             title: " [ SELECT COMMAND MODULE ] ",
@@ -86,18 +109,22 @@ async function handler(m, { conn, bot, command, args }) {
             }))
         }];
 
-        // ستايل مبرمجين (مختصر، حاد ونظيف)
-        const menuText = `┌─── [ EL-HAWARY SYSTEM v2.0 ] ───┐
+        const senderNumber = m.sender.split("@")[0];
+
+        const menuText = `┌─── [ EL-HAWARY SYSTEM v2.5 // ${greeting} ] ───┐
 │
 │ 🛠️ INF: Multi-Task WhatsApp Bot
 │ 👑 DEV: El-Hawary
 │
 ├─── [ SYSTEM INFO ] ───
 │ 
-│ 💻 USER   : @${m.sender.split("@")[0]}
-│ ⏱️ UPTIME : ${uptimeFormatted}
-│ 📅 DATE   : ${date}
-│ 🤖 KERNEL : ${bot.config.info.nameBot}
+│ 💻 OPERATOR : @${senderNumber} [ ${userRank} ]
+│ ⏱️ UPTIME   : ${uptimeFormatted}
+│ ⚡ LATENCY  : ${latency.toFixed(0)} ms
+│ 📊 RAM USE  : [${ramBar}] ${ramPercentage}% (${usedRAM}MB)
+│ 📦 SYSTEMS  : ${CATEGORIES.length} Cores / ${cmds.length} Cmds
+│ 📅 DATE     : ${date}
+│ 🤖 KERNEL   : ${bot.config?.info?.nameBot || 'Hawary-Kernel'}
 │
 └─── [ SELECT MODULE BELOW ] ───`;
 
@@ -105,6 +132,9 @@ async function handler(m, { conn, bot, command, args }) {
             media: { url: IMAGE_URL },
             mediaType: 'image',
             caption: menuText,
+            contextInfo: {
+                mentionedJid: [m.sender]
+            },
             buttons: [
                 {
                     name: "cta_url",
@@ -129,7 +159,7 @@ async function handler(m, { conn, bot, command, args }) {
                 }
             ],
             mentions: [m.sender]
-        }, global.reply_status);
+        }, global.reply_status || m);
 
         return;
     }
@@ -144,29 +174,30 @@ async function handler(m, { conn, bot, command, args }) {
         return;
     }
 
-    const cmds = await bot.getAllCommands();
-    const categoryCmds = cmds.filter(c => c.category === cat[2]);
+    const categoryCmds = cmds.filter(c => c.category?.toLowerCase() === cat[2].toLowerCase());
 
     if (!categoryCmds.length) {
         await conn.sendMessage(m.chat, {
-            text: '// status: MODULE_EMPTY',
+            text: `// status: MODULE_EMPTY (${cat[1]})`,
             contextInfo: context(m.sender)
         }, { quoted: m });
         return;
     }
 
-    const cmdsList = categoryCmds.map(c =>
-        `│ ↳ /${c.usage?.join(`\n│ ↳ /`)}`
-    ).join('\n');
+    const cmdsList = categoryCmds.map(c => {
+        if (Array.isArray(c.usage)) {
+            return c.usage.map(u => `│ ↳ /${u}`).join('\n');
+        } else {
+            return `│ ↳ /${c.usage || 'unknown'}`;
+        }
+    }).join('\n');
 
     await conn.sendMessage(m.chat, {
-        text: `
-┌─── [ MODULE: ${cat[1].toUpperCase()} ] ───┐
+        text: `┌─── [ MODULE: ${cat[1].toUpperCase()} ] ───┐
 │
 ${cmdsList}
 │
-└─── [ EL-HAWARY CORE ] ───┘
-        `.trim(),
+└─── [ EL-HAWARY CORE ] ───┘`,
         contextInfo: context(m.sender)
     }, { quoted: m });
 }
