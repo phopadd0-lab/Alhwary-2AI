@@ -47,16 +47,27 @@ const context = (jid) => ({
 async function handler(m, { conn, bot, command, args }) {
     const startPing = performanceNow();
 
+    // معالجة نقطة الفحص السريع (.)
     if (/^\.$/i.test(m.text) || command === '.') {
         const endPing = performanceNow() - startPing;
-        await conn.sendMessage(m.chat, {
+        const pingMsg = await conn.sendMessage(m.chat, {
             text: `// SYSTEM_STATUS: ACTIVE ✔ (${endPing.toFixed(0)}ms)`,
             contextInfo: context(m.sender)
         }, { quoted: m });
+        
+        setTimeout(async () => {
+            await conn.sendMessage(m.chat, { delete: pingMsg.key }).catch(() => {});
+        }, 4000);
         return;
     }
 
-    const selected = parseInt(args[0]);
+    // استخراج رقم الموديول المختار بدقة سواء من الـ args أو من نص الرسالة التفاعلية مباشرة
+    let selected = parseInt(args[0]);
+    if (isNaN(selected) && m.text) {
+        const match = m.text.match(/\d+/);
+        if (match) selected = parseInt(match[0]);
+    }
+
     const now = new Date();
     const uptimeSeconds = process.uptime();
 
@@ -73,8 +84,8 @@ async function handler(m, { conn, bot, command, args }) {
 
     const cmds = await bot.getAllCommands();
 
-    if (!selected && !args[0]) {
-
+    // إذا لم يتم اختيار أي موديول، يتم عرض القائمة الرئيسية بالأزرار
+    if (!selected) {
         const currentHour = now.getHours();
         let greeting = "SYSTEM_BOOT";
         if (currentHour >= 5 && currentHour < 12) greeting = "GOOD_MORNING";
@@ -93,7 +104,7 @@ async function handler(m, { conn, bot, command, args }) {
             userRank = "ROOT_DEVELOPER";
         } else if (m.isGroup) {
             const groupMetadata = await conn.groupMetadata(m.chat).catch(() => ({}));
-            const participants = groupMetadata.participants || [];
+            const participants = groupMetadataMetadata?.participants || [];
             const userAdmin = participants.find(p => p.id === m.sender);
             if (userAdmin?.admin) userRank = "NETWORK_ADMIN";
         }
@@ -109,8 +120,6 @@ async function handler(m, { conn, bot, command, args }) {
             }))
         }];
 
-        const senderNumber = m.sender.split("@")[0];
-
         const menuText = `┌─── [ EL-HAWARY SYSTEM v2.5 // ${greeting} ] ───┐
 │
 │ 🛠️ INF: Multi-Task WhatsApp Bot
@@ -118,7 +127,7 @@ async function handler(m, { conn, bot, command, args }) {
 │
 ├─── [ SYSTEM INFO ] ───
 │ 
-│ 💻 OPERATOR : @${senderNumber} [ ${userRank} ]
+│ 💻 OPERATOR : @${m.sender.split("@")[0]} [ ${userRank} ]
 │ ⏱️ UPTIME   : ${uptimeFormatted}
 │ ⚡ LATENCY  : ${latency.toFixed(0)} ms
 │ 📊 RAM USE  : [${ramBar}] ${ramPercentage}% (${usedRAM}MB)
@@ -132,9 +141,6 @@ async function handler(m, { conn, bot, command, args }) {
             media: { url: IMAGE_URL },
             mediaType: 'image',
             caption: menuText,
-            contextInfo: {
-                mentionedJid: [m.sender]
-            },
             buttons: [
                 {
                     name: "cta_url",
@@ -159,7 +165,7 @@ async function handler(m, { conn, bot, command, args }) {
                 }
             ],
             mentions: [m.sender]
-        }, global.reply_status || m);
+        }, global.reply_status || m).catch(err => console.error("Error sending menu buttons:", err));
 
         return;
     }
@@ -192,6 +198,31 @@ async function handler(m, { conn, bot, command, args }) {
         }
     }).join('\n');
 
+    // 🟢 [تحديث الحذف الذكي]: مسح أثر قائمة الأزرار الرئيسية عند اختيار الموديول بنجاح
+    try {
+        // التحقق أولاً من الرسالة المقتبسة العادية
+        if (m.quoted) {
+            await conn.sendMessage(m.chat, { delete: m.quoted.key }).catch(() => {});
+        } 
+        // دعم لحذف الرسائل التفاعلية (List/Button) عبر استهداف سياق الرسالة التي تم التفاعل معها
+        else if (m.message?.listResponseMessage || m.message?.buttonsResponseMessage || m.message?.templateButtonReplyMessage) {
+            const contextInfo = m.message.listResponseMessage?.contextInfo || m.message.buttonsResponseMessage?.contextInfo || m.message.templateButtonReplyMessage?.contextInfo;
+            if (contextInfo?.stanzaId) {
+                await conn.sendMessage(m.chat, {
+                    delete: {
+                        remoteJid: m.chat,
+                        fromMe: true,
+                        id: contextInfo.stanzaId,
+                        participant: contextInfo.participant
+                    }
+                }).catch(() => {});
+            }
+        }
+    } catch (e) {
+        console.log("حذف رسالة المنيو غير مدعوم في هذا الإصدار أو تم حذفها بالفعل");
+    }
+
+    // إرسال رسالة الأوامر الجديدة الخاصة بالقسم المختار
     await conn.sendMessage(m.chat, {
         text: `┌─── [ MODULE: ${cat[1].toUpperCase()} ] ───┐
 │
