@@ -49,14 +49,10 @@ async function handler(m, { conn, bot, command, args }) {
 
     if (/^\.$/i.test(m.text) || command === '.') {
         const endPing = performanceNow() - startPing;
-        const pingMsg = await conn.sendMessage(m.chat, {
+        await conn.sendMessage(m.chat, {
             text: `// SYSTEM_STATUS: ACTIVE ✔ (${endPing.toFixed(0)}ms)`,
             contextInfo: context(m.sender)
         }, { quoted: m });
-        
-        setTimeout(async () => {
-            await conn.sendMessage(m.chat, { delete: pingMsg.key }).catch(() => {});
-        }, 4000);
         return;
     }
 
@@ -196,12 +192,6 @@ async function handler(m, { conn, bot, command, args }) {
         }
     }).join('\n');
 
-    // 🟢 [التعديل الجديد]: حذف رسالة الأزرار/المنيو السابقة ومسح أثرها بمجرد اختيار الأمر
-    if (m.quoted) {
-        await conn.sendMessage(m.chat, { delete: m.quoted.vname ? m.quoted.key : { remoteJid: m.chat, fromMe: true, id: m.quoted.id } }).catch(() => {});
-    }
-
-    // إرسال قائمة أوامر القسم المحدد
     await conn.sendMessage(m.chat, {
         text: `┌─── [ MODULE: ${cat[1].toUpperCase()} ] ───┐
 │
