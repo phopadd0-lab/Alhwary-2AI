@@ -35,7 +35,7 @@ const context = (jid) => ({
         serverMessageId: -1
     },
     externalAdReply: {
-        title: "• EL-HAWARY CORE •",
+        title: "• 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑪𝑶𝑹𝑬 •",
         body: "SYSTEM: ONLINE",
         thumbnailUrl: IMAGE_URL,
         sourceUrl: '',
@@ -123,7 +123,7 @@ async function handler(m, { conn, bot, command, args }) {
         const menuText = `┌─── [ EL-HAWARY SYSTEM v2.5 // ${greeting} ] ───┐
 │
 │ 🛠️ INF: Multi-Task WhatsApp Bot
-│ 👑 DEV: El-Hawary
+│ 👑 DEV: 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 
 │
 ├─── [ SYSTEM INFO ] ───
 │ 
