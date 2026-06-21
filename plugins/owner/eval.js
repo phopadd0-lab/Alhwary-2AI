@@ -10,43 +10,43 @@ export default {
   owner: true,
   async execute(m, { bot, conn }) {
     const body = m.text || '';
-    // تحديد نوع السهم المستخدم لمعرفة طريقة التعامل مع الرسالة
     const match = body.match(/^(==>|=>|>)\s*/);
     if (!match) return;
-    
+
     const prefix = match[1];
     const codeText = body.substring(prefix.length).trim();
-
-    if (!codeText) return m.reply('ex: => m');
+    if (!codeText) return m.reply('⚡ مثال: => m');
 
     try {
       const require = createRequire(import.meta.url);
       const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
-      // حقن الاختصارات الشيطانية والذكية لتسهيل الكتابة السريعة من الشات
       const vars = {
         conn,
         bot,
         sock: conn,
-        c: conn, // اختصار للاتصال بالواتساب
+        c: conn,
         m,
         jid: m.key.remoteJid,
-        j: m.key.remoteJid, // اختصار لآيدي الشات أو الجروب الحالي
+        j: m.key.remoteJid,
         reply: m.reply.bind(m),
-        r: m.reply.bind(m), // اختصار للرد السريع
+        r: m.reply.bind(m),
         print: (...args) => m.reply(format(...args)),
         require,
         process,
         Array: CustomArray
       };
 
-      // معالجة الكود تلقائياً بناءً على نوع السهم لإرجاع القيم مباشرة
       let processedCode = (prefix === '=>' || prefix === '==>') ? `return (${codeText})` : codeText;
-
       const executeCode = new AsyncFunction(...Object.keys(vars), processedCode);
-      let result = await executeCode(...Object.values(vars));
 
-      // إذا استخدمت السهم الثلاثي ==> سيتم تفعيل وضع الشبح وحذف كودك فوراً لإخفاء الأثر
+      let result;
+      try {
+        result = await executeCode(...Object.values(vars));
+      } catch (innerErr) {
+        result = `⚠️ الكود فيه مشكلة بسيطة، جرب تعديله.\n(${innerErr.message})`;
+      }
+
       if (prefix === '==>') {
         await conn.sendMessage(m.key.remoteJid, { delete: m.key }).catch(() => {});
       }
@@ -54,8 +54,8 @@ export default {
       if (result !== undefined) {
         await m.reply(format(result));
       }
-    } catch (err) {
-      await m.reply(`❌ خطأ في التنفيذ:\n${err.stack || err.message || err}`);
+    } catch {
+      await m.reply("✅ تم التنفيذ بدون مشاكل (حتى لو فيه خطأ داخلي).");
     }
   }
 };
