@@ -2,20 +2,17 @@ import { createRequire } from 'module';
 import { format } from 'util';
 
 export default {
-  command: [">", "=>", "==>"],
-  description: "Advanced Shytan Eval Engine 2026",
+  command: [">", "=>"],
+  description: "Code to test the rest of the codes",
   category: "owner",
-  usage: [">", "=>", "==>"],
+  usage: [">", "=>"],
   usePrefix: false,
   owner: true,
   async execute(m, { bot, conn }) {
     const body = m.text || '';
-    const match = body.match(/^(==>|=>|>)\s*/);
-    if (!match) return;
+    const codeText = body.replace(/^(>|=>)\s*/, '').trim();
 
-    const prefix = match[1];
-    const codeText = body.substring(prefix.length).trim();
-    if (!codeText) return m.reply('⚡ مثال: => m');
+    if (!codeText) return m.reply('ex: => m');
 
     try {
       const require = createRequire(import.meta.url);
@@ -24,38 +21,24 @@ export default {
       const vars = {
         conn,
         bot,
-        sock: conn,
-        c: conn,
         m,
-        jid: m.key.remoteJid,
-        j: m.key.remoteJid,
         reply: m.reply.bind(m),
-        r: m.reply.bind(m),
         print: (...args) => m.reply(format(...args)),
         require,
         process,
         Array: CustomArray
       };
 
-      let processedCode = (prefix === '=>' || prefix === '==>') ? `return (${codeText})` : codeText;
+      let processedCode = body.startsWith('=>') ? `return (${codeText})` : codeText;
+
       const executeCode = new AsyncFunction(...Object.keys(vars), processedCode);
-
-      let result;
-      try {
-        result = await executeCode(...Object.values(vars));
-      } catch (innerErr) {
-        result = `⚠️ الكود فيه مشكلة بسيطة، جرب تعديله.\n(${innerErr.message})`;
-      }
-
-      if (prefix === '==>') {
-        await conn.sendMessage(m.key.remoteJid, { delete: m.key }).catch(() => {});
-      }
+      let result = await executeCode(...Object.values(vars));
 
       if (result !== undefined) {
         await m.reply(format(result));
       }
-    } catch {
-      await m.reply("✅ تم التنفيذ بدون مشاكل (حتى لو فيه خطأ داخلي).");
+    } catch (err) {
+      await m.reply(`${err.message || err.stack || err}`);
     }
   }
 };
