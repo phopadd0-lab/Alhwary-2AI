@@ -1,5 +1,3 @@
-import performanceNow from 'performance-now';
-
 const CATEGORIES = [
     [1, 'التـحـمـيـل', 'downloads', '↳'],
     [2, 'الـمـجـمـوعـات', 'group', '↳'],
@@ -30,7 +28,7 @@ const context = (jid) => ({
     isForwarded: true,
     forwardingScore: 1,
     forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363233343434@newsletter', 
+        newsletterJid: '120363419296439517@newsletter', // 🟢 هنا قناتك الجديدة والجاهزة للتوجيه
         newsletterName: 'EL-HAWARY SYSTEM | 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻',
         serverMessageId: -1
     },
@@ -45,36 +43,25 @@ const context = (jid) => ({
 });
 
 async function handler(m, { conn, bot, command, args }) {
-    const startPing = performanceNow();
 
-    // معالجة نقطة الفحص السريع (.)
     if (/^\.$/i.test(m.text) || command === '.') {
-        const endPing = performanceNow() - startPing;
-        const pingMsg = await conn.sendMessage(m.chat, {
-            text: `// SYSTEM_STATUS: ACTIVE ✔ (${endPing.toFixed(0)}ms)`,
+        await conn.sendMessage(m.chat, {
+            text: `// SYSTEM_STATUS: ACTIVE ✔`,
             contextInfo: context(m.sender)
         }, { quoted: m });
-        
-        setTimeout(async () => {
-            await conn.sendMessage(m.chat, { delete: pingMsg.key }).catch(() => {});
-        }, 4000);
         return;
     }
 
-    // استخراج رقم الموديول المختار بدقة سواء من الـ args أو من نص الرسالة التفاعلية مباشرة
-    let selected = parseInt(args[0]);
-    if (isNaN(selected) && m.text) {
-        const match = m.text.match(/\d+/);
-        if (match) selected = parseInt(match[0]);
-    }
-
+    const selected = parseInt(args[0]);
     const now = new Date();
     const uptimeSeconds = process.uptime();
 
     const hours = Math.floor(uptimeSeconds / 3600);
     const minutes = Math.floor((uptimeSeconds % 3600) / 60);
     const seconds = Math.floor(uptimeSeconds % 60);
-    const uptimeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    const uptimeFormatted =
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     const date = now.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -82,34 +69,7 @@ async function handler(m, { conn, bot, command, args }) {
         day: '2-digit'
     });
 
-    const cmds = await bot.getAllCommands();
-
-    // إذا لم يتم اختيار أي موديول، يتم عرض القائمة الرئيسية بالأزرار
-    if (!selected) {
-        const currentHour = now.getHours();
-        let greeting = "SYSTEM_BOOT";
-        if (currentHour >= 5 && currentHour < 12) greeting = "GOOD_MORNING";
-        else if (currentHour >= 12 && currentHour < 18) greeting = "GOOD_AFTERNOON";
-        else greeting = "GOOD_EVENING";
-
-        const usedRAM = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(0);
-        const totalRAM = 512; 
-        const ramPercentage = Math.min(Math.round((usedRAM / totalRAM) * 100), 100);
-        const ramBar = '█'.repeat(Math.floor(ramPercentage / 10)) + '░'.repeat(10 - Math.floor(ramPercentage / 10));
-
-        let userRank = "GUEST_USER";
-        const isOwner = bot.config?.owner?.some(o => o[0] === m.sender.split('@')[0]) || m.fromMe;
-        
-        if (isOwner) {
-            userRank = "ROOT_DEVELOPER";
-        } else if (m.isGroup) {
-            const groupMetadata = await conn.groupMetadata(m.chat).catch(() => ({}));
-            const participants = groupMetadataMetadata?.participants || [];
-            const userAdmin = participants.find(p => p.id === m.sender);
-            if (userAdmin?.admin) userRank = "NETWORK_ADMIN";
-        }
-
-        const latency = performanceNow() - startPing;
+    if (!selected && !args[0]) {
 
         const sections = [{
             title: " [ SELECT COMMAND MODULE ] ",
@@ -120,22 +80,20 @@ async function handler(m, { conn, bot, command, args }) {
             }))
         }];
 
-        const menuText = `┌─── [ EL-HAWARY SYSTEM v2.5 // ${greeting} ] ───┐
+        // حساب الرام والمساحة والبنج من قلب السيرفر
+        const usedRAM = (process.memoryUsage().rss / 1024 / 1024).toFixed(0);
+        const freeMemory = (process.memoryUsage().heapTotal / 1024 / 1024).toFixed(0);
+        const latency = (Date.now() - m.messageTimestamp * 1000);
+
+        // المنيو الفخمة والمنظمة بالأيقونات السيبرانية الخفيفة
+        const menuText = `┌─── ❖ [ ᴀʟʜᴡᴀʀʏ_ᴄᴏʀᴇ ] ❖ ───┐
 │
-│ 🛠️ INF: Multi-Task WhatsApp Bot
-│ 👑 DEV: 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 
+│ 🛠️ OWNER : +201556853817
+│ 📊 RAM   : ${usedRAM} MB
+│ 💾 DISK  : ${freeMemory} MB FREE
+│ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
 │
-├─── [ SYSTEM INFO ] ───
-│ 
-│ 💻 OPERATOR : @${m.sender.split("@")[0]} [ ${userRank} ]
-│ ⏱️ UPTIME   : ${uptimeFormatted}
-│ ⚡ LATENCY  : ${latency.toFixed(0)} ms
-│ 📊 RAM USE  : [${ramBar}] ${ramPercentage}% (${usedRAM}MB)
-│ 📦 SYSTEMS  : ${CATEGORIES.length} Cores / ${cmds.length} Cmds
-│ 📅 DATE     : ${date}
-│ 🤖 KERNEL   : ${bot.config?.info?.nameBot || 'Hawary-Kernel'}
-│
-└─── [ SELECT MODULE BELOW ] ───`;
+└─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
 
         await conn.sendButtonNormal(m.chat, {
             media: { url: IMAGE_URL },
@@ -165,7 +123,7 @@ async function handler(m, { conn, bot, command, args }) {
                 }
             ],
             mentions: [m.sender]
-        }, global.reply_status || m).catch(err => console.error("Error sending menu buttons:", err));
+        }, global.reply_status || m);
 
         return;
     }
@@ -180,55 +138,29 @@ async function handler(m, { conn, bot, command, args }) {
         return;
     }
 
-    const categoryCmds = cmds.filter(c => c.category?.toLowerCase() === cat[2].toLowerCase());
+    const cmds = await bot.getAllCommands();
+    const categoryCmds = cmds.filter(c => c.category === cat[2]);
 
     if (!categoryCmds.length) {
         await conn.sendMessage(m.chat, {
-            text: `// status: MODULE_EMPTY (${cat[1]})`,
+            text: '// status: MODULE_EMPTY',
             contextInfo: context(m.sender)
         }, { quoted: m });
         return;
     }
 
-    const cmdsList = categoryCmds.map(c => {
-        if (Array.isArray(c.usage)) {
-            return c.usage.map(u => `│ ↳ /${u}`).join('\n');
-        } else {
-            return `│ ↳ /${c.usage || 'unknown'}`;
-        }
-    }).join('\n');
+    const cmdsList = categoryCmds.map(c =>
+        `│ ↳ /${c.usage?.join(`\n│ ↳ /`)}`
+    ).join('\n');
 
-    // 🟢 [تحديث الحذف الذكي]: مسح أثر قائمة الأزرار الرئيسية عند اختيار الموديول بنجاح
-    try {
-        // التحقق أولاً من الرسالة المقتبسة العادية
-        if (m.quoted) {
-            await conn.sendMessage(m.chat, { delete: m.quoted.key }).catch(() => {});
-        } 
-        // دعم لحذف الرسائل التفاعلية (List/Button) عبر استهداف سياق الرسالة التي تم التفاعل معها
-        else if (m.message?.listResponseMessage || m.message?.buttonsResponseMessage || m.message?.templateButtonReplyMessage) {
-            const contextInfo = m.message.listResponseMessage?.contextInfo || m.message.buttonsResponseMessage?.contextInfo || m.message.templateButtonReplyMessage?.contextInfo;
-            if (contextInfo?.stanzaId) {
-                await conn.sendMessage(m.chat, {
-                    delete: {
-                        remoteJid: m.chat,
-                        fromMe: true,
-                        id: contextInfo.stanzaId,
-                        participant: contextInfo.participant
-                    }
-                }).catch(() => {});
-            }
-        }
-    } catch (e) {
-        console.log("حذف رسالة المنيو غير مدعوم في هذا الإصدار أو تم حذفها بالفعل");
-    }
-
-    // إرسال رسالة الأوامر الجديدة الخاصة بالقسم المختار
     await conn.sendMessage(m.chat, {
-        text: `┌─── [ MODULE: ${cat[1].toUpperCase()} ] ───┐
+        text: `
+┌─── [ MODULE: ${cat[1]} ] ───┐
 │
 ${cmdsList}
 │
-└─── [ EL-HAWARY CORE ] ───┘`,
+└─── [ EL-HAWARY CORE ] ───┘
+        `.trim(),
         contextInfo: context(m.sender)
     }, { quoted: m });
 }
