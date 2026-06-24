@@ -18,7 +18,7 @@ const CATEGORIES = [
   [15, 'الـالــقــاب', 'nicknames', '🏷️'],
   [16, 'الـلـوجـوهــات', 'logos', '🎯'],
   [17, 'تـغـيـر الاصـوات', 'voices', '🎤'],
-  [18, 'أخــرى', 'other', '✨']
+  [18, 'أخــرى', 'other', '🌌']
 ];
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
@@ -27,48 +27,76 @@ let handler = async (m, { conn, bot, command, args }) => {
   const { images } = bot.config.info;
   const img = Array.isArray(images) ? images[Math.floor(Math.random() * images.length)] : images;
 
-  // حساب الرام
-  const totalRam = (os.totalmem() / 1024 / 1024 / 1024).toFixed(2) + " GB";
-
-  // حساب البنج
+  // حساب البينج بشكل صحيح
   const start = Date.now();
-  await conn.sendMessage(m.chat, { text: "⏳ جاري قياس البنج..." });
+  const loadingMessage = await conn.sendMessage(m.chat, { text: "🔱 جاري تحميل الأوامر..." });
   const ping = Date.now() - start;
+  
+  // مسح رسالة التحميل بعد حساب البينج (اختياري لتحسين المظهر)
+  if (loadingMessage) await conn.sendMessage(m.chat, { delete: loadingMessage.key });
 
-  // عدد الأوامر
-  const commandCount = bot.stats?.commands || 0;
+  const cmds = await bot.getAllCommands();
 
-  // الرتبة
+  // تحديد رتبة المستخدم
   let rank = "👤 عضو";
-  if (m.sender === bot.config.owner) rank = "👑 Owner";
+  if (m.sender.includes("201556853817")) rank = "👑 المطور الكبير";
+  else if (m.sender === bot.config.owner) rank = "👑 Owner";
   else if (bot.admins?.includes(m.sender)) rank = "🛡️ Admin";
 
-  // الوقت والتاريخ
+  // إعدادات الوقت والتاريخ واليوم
   const now = new Date();
   const date = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
   const time = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const day = now.toLocaleDateString('ar-EG', { weekday: 'long' }); // إصلاح خطأ المتغير غير المعرف سابقاً
 
   if (!args[0]) {
     const sections = [{
-      title: "⚡ ~ الأقسام ~ 🚀",
+      title: "┏━ 🗂️ الأقسام ━┓",
       rows: CATEGORIES.map(c => ({
-        title: `${c[0]} ~ ${c[1]} ${c[3]}`,
-        description: `اضغط لعرض أوامر قسم ${c[1]}`,
+        title: `█▀  [ ${c[3]} ]  ${c[1]}`,
+        description: `⚡ اضغط لعرض أوامر قسم : ${c[1]}`,
         id: `.${command} ${c[0]}`
       }))
     }];
 
     const menuText = `
-⚡━━━⟦ الـمـنـيـو ⟧━━━⚡
-👋 أهلاً → [ @${m.sender.split("@")[0]} ]
-👑 رتبتك → ${rank}
-🕒 الوقت → ${time}
-📅 التاريخ → ${date}
-📊 عدد الأوامر → ${commandCount}
-💾 الرام → ${totalRam}
-📡 البنج → ${ping} ms
-━━━━━━━━━━━━━━━━━━━━━━━
-> اختار قسم من القائمة ⬇️
+❄️ 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 بوت 𓆩𓆪
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+❄️ 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻 ❄️
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+↵ منور يا @${m.sender.split("@")[0]} ❄️
+↵ يارب تـقـضـي أجمـل وقـت معانـا!
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+
+❄️ معلومات المستخدم ❄️
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+〘🩸〙↵ ⌟المنشن⌜: @${m.sender.split("@")[0]}
+〘🩸〙↵ ⌟الرتبة⌜: ${rank}
+〘🩸〙↵ ⌟الليفل⌜: 0
+〘🩸〙↵ ⌟وقت التشغيل⌜: ${time}
+〘🩸〙↵ ⌟البينج⌜: ${ping} ms
+〘🩸〙↵ ⌟اليوم⌜: ${day}
+〘🩸〙↵ ⌟التاريخ⌜: ${date}
+
+👑 معلومات المطور 👑
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+〘🩸〙↵ ⌟اللقب⌜: 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 👾
+〘🩸〙↵ ⌟رقم الواتساب⌜: https://wa.me/201556853817
+
+⚠️ تعليمات مهمة ⚠️
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+〘🩸〙↵ ⌟متشتمش البوت يا نجم ✋⌜
+〘🩸〙↵ ⌟للشكوى أو الأفكار: *.ابلاغ*⌜
+〘🩸〙↵ ⌟دوس على الأزرار للاوامر⌜
+〘🩸〙↵ ⌟قبل أي أمر اكتب النقطة [.]⌜
+〘🩸〙↵ ⌟للتسجيل: *تسجيل / reg*⌜
+
+🎯 أوامر البوت 🎯
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
+〘🩸〙↵ ⌟18 قسم مختلف من الأوامر⌜
+〘🩸〙↵ ⌟من المشرفين للترفيه والألعاب⌜
+〘🩸〙↵ ⌟التصميمات والذكاء الاصطناعي⌜
+*※⋅ ━━ ╼╃⊰🍷⊱╄╾ ━━ ⋅※*
 `;
 
     await conn.sendButtonNormal(m.chat, {
@@ -76,15 +104,11 @@ let handler = async (m, { conn, bot, command, args }) => {
       mediaType: 'image',
       caption: menuText,
       buttons: [
-        { name: "single_select", params: { title: "⚡ الأقسام 🚀", sections: sections } },
-        { name: "cta_url", params: { display_text: "📎 القناة 🚀", url: "https://t.me/YourChannel" } },
-        { name: "cta_url", params: { display_text: "👨‍💻 المطور ⚡", url: "https://wa.me/201234567890" } }
+        { name: "single_select", params: { title: "『❄️┆الأقسام┆❄️』", sections: sections } },
+        { name: "cta_url", params: { display_text: "『🍷┆القناة┆🍷』", url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U" } },
+        { name: "cta_url", params: { display_text: "『🐊┆المطور┆🐊』", url: "https://wa.me/212684938111" } }
       ],
-      mentions: [m.sender],
-      newsletter: {
-        name: '𝐕𝐈𝐈7 ~ 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 🕷️',
-        jid: '120363225356834044@newsletter'
-      }
+      mentions: [m.sender]
     }, global.reply_status);
     return;
   }
@@ -96,22 +120,33 @@ let handler = async (m, { conn, bot, command, args }) => {
     return;
   }
 
-  const cmds = await bot.getAllCommands();
   const categoryCmds = cmds.filter(c => c.category === cat[2]);
 
   if (!categoryCmds.length) {
-    await conn.sendMessage(m.chat, { text: '*❌ القسم فاضي*' }, { quoted: m });
+    await conn.sendMessage(m.chat, { text: '*❌ القسم فاضي حالياً*' }, { quoted: m });
     return;
   }
 
-  const cmdsList = categoryCmds.map(c => `${cat[3]} /${c.usage?.join(`\n${cat[3]} /`)}`).join('\n');
+  const cmdsList = categoryCmds.map(c => {
+    const usage = Array.isArray(c.usage) ? c.usage.join('\n┊⇇『 .') : c.usage;
+    return `┊⇇『 .${usage} 』`;
+  }).join('\n');
 
-  await conn.sendMessage(m.chat, { text: `
-⚡━━━⟦ ${cat[1]} ${cat[3]} ⟧━━━⚡
+  const messageText = `
+╭━━━──〔 ${cat[3]} 〕──━━━╮
+   ${cat[3]} RAGNA BOT ${cat[3]}
+╰━━━──〔 ✦ ≫ ──━━━╯
+
+『 ${cat[3]} قسم ${cat[1]} 』
+
 ${cmdsList}
-━━━━━━━━━━━━━━━━━━━━━━━
-👑 ${bot?.config?.info?.nameBot || 'POMNI-AI'}
-` }, { quoted: m });
+
+━━━━━━━━━━━━━━━
+┃ 🤖 البوت: 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻
+┃ 👑 المطور: 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 👾
+━━━━━━━━━━━━━━━`;
+
+  await conn.sendMessage(m.chat, { text: messageText }, { quoted: m });
 };
 
 handler.command = ['منيو', 'menu'];
