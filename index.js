@@ -10,11 +10,11 @@ const client = new Client({
   fromMe: false, 
   owners: [
   // Owner 1
-    { name: "ALH", lid: "33621719149@lid", jid: "79020027922@s.whatsapp.net" },
+    { name: "ALH", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
   // Owner 2
     { name: "ALHWARY", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
   // Owner 3
-    { name: "Sukuna", jid: "9647884877339@s.whatsapp.net", lid: "9647884877339@lid" },
+    { name: "Sukuna", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" },
   // Owner 4 
    { name: "عمورتي", jid: "201211883781@s.whatsapp.net", lid: "201211883781@lid" }
   ],
@@ -35,9 +35,9 @@ const { config } = client;
 config.info = { 
   nameBot: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې", 
   nameChannel: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې", 
-  idChannel: "79020027922@newsletter",
+  idChannel: "201556853817@newsletter",
   urls: {
-    repo: "https://github.com/deveni0/Pomni-AI",
+    repo: "201556853817",
     api: "https://emam-api.web.id",
     channel: "https://whatsapp.com/channel/0029VaQim2bAu3aPsRVaDq3v"
   },
