@@ -88,10 +88,10 @@ async function handler(m, { conn, bot, command, args }) {
         // المنيو الفخمة والمنظمة بالأيقونات السيبرانية الخفيفة
         const menuText=`┌─── ❖>\[ 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 ] ❖───┐
 │
-> │ 🛠️ OWNER : +201556853817
-> │ 📊 RAM   : ${usedRAM} MB
-> │ 💾 DISK  : ${freeMemory} MB FREE
-> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
+❄> │ 🛠️ OWNER : +201556853817
+❄> │ 📊 RAM   : ${usedRAM} MB
+❄> │ 💾 DISK  : ${freeMemory} MB FREE
+❄> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
 │
 > └─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
 
@@ -103,21 +103,21 @@ async function handler(m, { conn, bot, command, args }) {
                 {
                     name: "cta_url",
                     params: {
-                        display_text: "•『🐊┆الـمـطـور┆🐊 •",
+                        display_text: "•『🐊┆الـمـطـور┆🐊•",
                         url: "https://wa.me/+201556853817"
                     }
                 },
                 {
                     name: "cta_url",
                     params: {
-                        display_text: "• 『🍷┆الـقـنـاه┆🍷』 •",
+                        display_text: "• 『🍷┆الـقـنـاه┆🍷』•",
                         url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U"
                     }
                 },
                 {
                     name: "single_select",
                     params: {
-                        title: "[ OPEN MODULE MENU ]",
+                        title: "[『❄️┆الاقـسـام┆❄️』]",
                         sections: sections
                     }
                 }
