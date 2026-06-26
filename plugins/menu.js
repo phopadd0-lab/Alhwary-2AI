@@ -88,10 +88,10 @@ async function handler(m, { conn, bot, command, args }) {
         // المنيو الفخمة والمنظمة بالأيقونات السيبرانية الخفيفة
         const menuText=`┌─── ❖>\[ 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 ] ❖───┐
 │
-❄> │ 🛠️ OWNER : +201556853817
-❄> │ 📊 RAM   : ${usedRAM} MB
-❄> │ 💾 DISK  : ${freeMemory} MB FREE
-❄> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
+> │ 🫆 OWNER : +201556853817
+> │ 📊 RAM   : ${usedRAM} MB
+> │ 🐧 DISK  : ${freeMemory} MB FREE
+> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
 │
 > └─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
 
