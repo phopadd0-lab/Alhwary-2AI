@@ -86,14 +86,14 @@ async function handler(m, { conn, bot, command, args }) {
         const latency = (Date.now() - m.messageTimestamp * 1000);
 
         // المنيو الفخمة والمنظمة بالأيقونات السيبرانية الخفيفة
-        const menuText = `┌─── ❖ [ ᴀʟʜᴡᴀʀʏ_ᴄᴏʀᴇ ] ❖ ───┐
+        const menuText=`┌─── ❖>\[ 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 ] ❖───┐
 │
-│ 🛠️ OWNER : +201556853817
-│ 📊 RAM   : ${usedRAM} MB
-│ 💾 DISK  : ${freeMemory} MB FREE
-│ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
+> │ 🛠️ OWNER : +201556853817
+> │ 📊 RAM   : ${usedRAM} MB
+> │ 💾 DISK  : ${freeMemory} MB FREE
+> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
 │
-└─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
+> └─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
 
         await conn.sendButtonNormal(m.chat, {
             media: { url: IMAGE_URL },
@@ -103,14 +103,14 @@ async function handler(m, { conn, bot, command, args }) {
                 {
                     name: "cta_url",
                     params: {
-                        display_text: "• DEVELOPER CONTROLLER •",
+                        display_text: "•『🐊┆الـمـطـور┆🐊 •",
                         url: "https://wa.me/+201556853817"
                     }
                 },
                 {
                     name: "cta_url",
                     params: {
-                        display_text: "• OFFICIAL CHANNEL •",
+                        display_text: "• 『🍷┆الـقـنـاه┆🍷』 •",
                         url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U"
                     }
                 },
