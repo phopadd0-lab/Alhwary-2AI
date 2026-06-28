@@ -5,7 +5,7 @@ let handler = async (m, { conn, bot }) => {
   let quoted = {
     key: { 
       fromMe: false, 
-      participant: '01556853817@s.whatsapp.net', 
+      participant: '201556853817@s.whatsapp.net', 
       remoteJid: 'status@broadcast' 
     },
     message: { conversation: watermark }
