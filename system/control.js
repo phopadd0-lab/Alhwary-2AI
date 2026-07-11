@@ -1,3 +1,4 @@
+
 import fs from "fs";
 import path from "path";
 
@@ -15,15 +16,15 @@ const group = async (ctx, event, eventType) => {
         const authorTag = author ? '@' + author.split('@')[0] : 'Unknown';
 
         const messages = {
-            add: `♡゙ مـنـور/ه ${users}${authorTag === users ? "" : `\n𝐛𝐲 ${authorTag}`}`,
-            remove: `${users} تم إزالته من الجروب${authorTag === users ? "" : `\n𝐛𝐲 ${authorTag}`}`,
-            promote: `♡゙ مـبـروك الادمـن ${users}\nby ${authorTag}`,
-            demote: `♡゙ بـقـيـت عـضـو خـلاص ${users}\nby ${authorTag}`
+            add: `♡ Welcome ${users}${authorTag === users ? "" : `\nby ${authorTag}`}`,
+            remove: `${users} has been removed from the group${authorTag === users ? "" : `\nby ${authorTag}`}`,
+            promote: `♡ Congrats Admin ${users}\nby ${authorTag}`,
+            demote: `♡ You are now a member ${users}\nby ${authorTag}`
         };
 
         txt = messages[eventType];
         if (!txt) return null;
-        
+
         if (global.db.groups[event.chat].noWelcome === true) return 9999;
 
         const img = ["remove", "add"].includes(eventType) 
@@ -33,10 +34,10 @@ const group = async (ctx, event, eventType) => {
         await ctx.sock.msgUrl(event.chat, txt, {
             img,
             title: ctx.config?.info.nameBot || "WhatsApp Bot",
-            body: "𝐴 𝑠𝑖𝑚𝑝𝑙𝑒 𝑊𝒉𝑎𝑡𝑠𝐴𝑝𝑝 𝑏𝑜𝑡 𝑓𝑜𝑟 𝑏𝑒𝑔𝑖𝑛𝑛𝑒𝑟𝑠, 𝑏𝑦 O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې",
+            body: "A simple WhatsApp bot for beginners, by OWNER",
             mentions: author ? [author, ...participants] : participants,
             newsletter: {
-                name: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې',
+                name: 'OWNER',
                 jid: '201556853817@newsletter'
             },
             big: ["remove", "add"].includes(eventType)
@@ -50,7 +51,7 @@ const group = async (ctx, event, eventType) => {
 
 const access = async (msg, checkType, time) => {
     const conn = await msg.client();
-    
+
     const quoted = {
         key: {
             participant: `${msg.sender.split('@')[0]}@s.whatsapp.net`,
@@ -65,32 +66,32 @@ const access = async (msg, checkType, time) => {
         },
         participant: '0@s.whatsapp.net',
     };
-    
+
     const messages = {
-        cooldown: `*♡⏳ استنى ${time || 'بعض كام ثانيه'} ثانية وكمل الأمر ⏳♡*\n⊱⋅ ──────────── ⋅⊰\n> *_لازم تصبر شويه عشان الأمر ده مينفعش فيه الاسبام_*`,
-        owner: `*♡ 🇩🇪 الأمر ده لـ المطورين فقط 🇩🇪♡*\n⊱⋅ ──────────── ⋅⊰\n> *_الامر ده لـ المطورين البوت لازم تكون مطور عشان تقدر تستخدمه_`,
-        group: `*♡💠 الأمر ده بيشتغل بس ف الجروبات 💠♡*\n⊱⋅ ──────────── ⋅⊰\n> *_لازم الأمر ده تستخدمه ف جروب فقط ممنوع غير كده_*`,
-        admin: `*♡📯 الأمر ده لـ الادمن فقط 📯♡*\n⊱⋅ ──────────── ⋅⊰\n> *_انت مجرد عضو لازم تبقي ادمن يا عضو يا عبد_*`,
-        private: `*♡🏷️ الأمر ده في الخاص فقط 🏷️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_الامر ف الخاص بس ياحبيبي_*`,
-        botAdmin: `*♡📌 لازم اكون ادمن عشان انقذ الأمر 📌♡*\n⊱⋅ ──────────── ⋅⊰\n> *_حطني ادمن عشان تقدر تستعمل الأمر ده_*`,
-        noSub: `*♡🫒 الأمر ده ف البوت الأساسي فقط 🫒♡*`,
-        disabled: `*♡🗃️ الامر متوقف (تحت صيانة) 🗃️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_الامر تحت صيانه قريباً بيشتغل تاني_*`,
-        error: `*✦♡⚠️ خطأ غير متوقع ⚠️♡✦*
+        cooldown: `*♡⏳ Wait ${time || 'a few'} seconds ⏳♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You need to wait a bit, this command cannot be spammed_*`,
+        owner: `*♡ 🇩🇪 This command is for developers only 🇩🇪♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You must be a bot developer to use this command_*`,
+        group: `*♡💠 This command works only in groups 💠♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You must use this command inside a group_*`,
+        admin: `*♡📯 This command is for admins only 📯♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You are just a member, you need admin rights_*`,
+        private: `*♡🏷️ This command works only in private chat 🏷️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_Use this command in private chat only_*`,
+        botAdmin: `*♡📌 I must be an admin to execute this command 📌♡*\n⊱⋅ ──────────── ⋅⊰\n> *_Make me admin to use this command_*`,
+        noSub: `*♡🫒 This command works only in the main bot 🫒♡*`,
+        disabled: `*♡🗃️ Command disabled (under maintenance) 🗃️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_This command is under maintenance, will be back soon_*`,
+        error: `*✦♡⚠️ Unexpected error ⚠️♡✦*
 
 ⊱⋅ ──────────── ⋅⊰
-❌ تواصل مع المطورين لإصلاح المشكلة ❌
+❌ Contact developers to fix the issue ❌
 ⊱⋅ ──────────── ⋅⊰
 
-💡 الحل السريع: اكتب ".المطور" للحصول على رقم المطور 👑`
+💡 Quick fix: type ".developer" to get the developer's number 👑`
     };
-    
+
     if (conn && messages[checkType]) {
         await conn.msgUrl(msg.chat, messages[checkType], {
             img: "https://i.pinimg.com/originals/02/c3/51/02c351dfd4eb72a62f225ce964dc510d.jpg",
-            title: "𝐀𝐥𝐞𝐫𝐭𝐬 | 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬",
-            body: "𝐵𝑜𝑡 𝑎𝑙𝑒𝑟𝑡𝑠: 𝑅𝑒𝑎𝑑 𝑡𝒉𝑒 𝑚𝑒𝑠𝑠𝑎𝑔𝑒 𝑡𝑜 𝑙𝑒𝑎𝑟𝑛 𝑚𝑜𝑟𝑒",
+            title: "Alerts | Warnings",
+            body: "Bot alerts: Read the message to learn more",
             newsletter: {
-                name: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې',
+                name: 'OWNER',
                 jid: '201556853817@newsletter'
             },
             big: false
