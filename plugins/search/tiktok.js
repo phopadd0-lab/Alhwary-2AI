@@ -37,6 +37,6 @@ if (data && data.length > 0) {
 }
 
 test.category = "search";
-test.usage = ["بحث_تيك"];
-test.command = ["بحث_تيك"];
+test.usage = ["ايديت "];
+test.command = ["ايديت "];
 export default test;
