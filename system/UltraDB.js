@@ -7,19 +7,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 class UltraDB {
     #path;
     #saveTimer = null;
-    
+
     constructor() {
         this.#path = path.join(__dirname, 'database.json');
-        
+
         const dir = path.dirname(this.#path);
         if (!existsSync(dir)) {
             mkdirSync(dir, { recursive: true });
         }
-        
+
         this.data = this.#load();
+        // إضافة هوية البوت
+        this.data.identity = "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥";
         return this.#createProxy();
     }
-    
+
     #load() {
         try {
             if (existsSync(this.#path)) {
@@ -29,30 +31,32 @@ class UltraDB {
                     if (!parsed.groups) parsed.groups = {};
                     if (!parsed.users) parsed.users = {};
                     if (parsed.dev === undefined) parsed.dev = false;
+                    if (!parsed.identity) parsed.identity = "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥";
                     return parsed;
                 }
             }
         } catch (e) {}
-        return { groups: {}, users: {}, dev: false };
+        return { groups: {}, users: {}, dev: false, identity: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥" };
     }
-    
+
     #save() {
         if (this.#saveTimer) clearTimeout(this.#saveTimer);
         this.#saveTimer = setTimeout(() => {
             try {
                 writeFileSync(this.#path, JSON.stringify(this.data, null, 2));
+                console.log("🔥 UltraDB saved by 𝐴𝐿𝐻𝑊𝐴𝑅𝑌");
             } catch (e) {}
             this.#saveTimer = null;
         }, 50);
     }
-    
+
     #isValidId(id) {
         return id && !id.includes('@newsletter') && !id.includes('@lid') && id.includes('@');
     }
-    
+
     #createProxy() {
         const self = this;
-        
+
         return new Proxy(this.data, {
             get(target, prop) {
                 if (prop === 'groups') {
@@ -103,7 +107,7 @@ class UltraDB {
                         }
                     });
                 }
-                
+
                 if (prop === 'users') {
                     return new Proxy(target.users, {
                         get(userTarget, userId) {
@@ -152,14 +156,18 @@ class UltraDB {
                         }
                     });
                 }
-                
+
                 if (prop === 'dev') {
                     return target.dev;
                 }
-                
+
+                if (prop === 'identity') {
+                    return target.identity;
+                }
+
                 return target[prop];
             },
-            
+
             set(target, prop, val) {
                 if (prop === 'groups' || prop === 'users') {
                     return false;
