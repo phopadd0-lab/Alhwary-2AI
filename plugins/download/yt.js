@@ -1,26 +1,26 @@
 import { Scrapy } from "meowsab";
 
 const handler = async (m, { conn, command, text }) => {
-  if (!text) throw '*❲ ❤️ ❳ ~ حط رابط جنب الامر ~ ❲ 💙 ❳ *';
-  
+  if (!text) throw '*❲ ❤️ ❳ ~ حط رابط جنب الأمر ~ ❲ 💙 ❳ *';
+
   if (!text.match(/youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\//)) {
     throw '*❌ ~ الرابط مش صحيح ~ حط رابط يوتيوب صحيح*';
   }
-  
+
   const isAudio = command === "يوت_اغنيه" || command === "ytmp3";
   const res = await (isAudio ? Scrapy.ytmp3(text) : Scrapy.ytmp4(text));
-  
+
   if (!res?.status) throw '❌ فشل في جلب البيانات من الرابط';
-  
-  const type = isAudio ? 'اغـانـي' : 'فيـديـوز';
+
+  const type = isAudio ? 'أغـانـي' : 'فيـديـوز';
   let caption = `*🐞 YouTube | يـوتـيـوب ${type} 🐞*\n\n`;
-  caption += `╭─┈─┈─┈─⟞🍧⟝─┈─┈─┈─╮\n`;
-  caption += `*❲ 📽️ ❳ الـعـنـون:* ${res.title}\n`;
-  caption += `*❲ 📢 ❳ الـقـنـاة:* ${res.channel}\n`;
-  caption += `*❲ ⏳ ❳ الـجـوده:* ${res.quality}\n`;
-  caption += `╰─┈─┈─┈─⟞🍬⟝─┈─┈─┈─╯\n`;
+  caption += `╭─┈─┈─┈─⟞🔥⟝─┈─┈─┈─╮\n`;
+  caption += `*❲ 📽️ ❳ العنوان:* ${res.title}\n`;
+  caption += `*❲ 📢 ❳ القناة:* ${res.channel}\n`;
+  caption += `*❲ ⏳ ❳ الجودة:* ${res.quality}\n`;
+  caption += `╰─┈─┈─┈─⟞🔥⟝─┈─┈─┈─╯\n`;
   caption += `> _*❲ ⏱️ ❳ الرجاء الانتظار قليلاً...*_`;
-  
+
   await conn.sendMessage(m.chat, { 
     text: caption,
     contextInfo: {
@@ -29,7 +29,7 @@ const handler = async (m, { conn, command, text }) => {
       forwardingScore: 1,
       forwardedNewsletterMessageInfo: {
         newsletterJid: '201556853817@newsletter',
-        newsletterName: 'آلُہۆآريَ ',
+        newsletterName: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥',
         serverMessageId: 0
       },
       externalAdReply: {
@@ -42,7 +42,7 @@ const handler = async (m, { conn, command, text }) => {
       }
     }
   });
-  
+
   await conn.sendMessage(m.chat, isAudio ? { 
     audio: { url: res.downloadUrl }, 
     mimetype: 'audio/mpeg',
@@ -54,7 +54,7 @@ const handler = async (m, { conn, command, text }) => {
 };
 
 handler.usage = ["يوتيوب", "يوت_اغنيه"];
-handler.category = "downloads";
+handler.category = "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥 downloads";
 handler.command = ['يوت_اغنيه', 'يوتيوب', "ytmp3", "ytmp4"];
 
 export default handler;
