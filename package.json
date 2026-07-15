@@ -1,14 +1,14 @@
 {
-  "name": "Pomni AI",
+  "name": "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 Bot",
   "version": "2.0.0",
-  "description": "Simple WhatsApp bot, Modified by VENi - youssefv",
+  "description": "Simple WhatsApp bot, Modified by 𝐴𝐿𝐻𝑊𝐴𝑅𝑌",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": ["whatsapp-bot", "pomni-ai"],
-  "author": "VENi - youssefv",
+  "keywords": ["whatsapp-bot", "𝐴𝐿𝐻𝑊𝐴𝑅𝑌"],
+  "author": "𝐴𝐿𝐻𝑊𝐴𝑅𝑌",
   "license": "MIT",
   "dependencies": {
     "meowsab": "https://github.com/deveni0/ws/tarball/main",
