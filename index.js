@@ -9,14 +9,10 @@ const client = new Client({
   prefix: [".", "/", "!"],
   fromMe: false, 
   owners: [
-  // Owner 1
-    { name: "ALH", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
-  // Owner 2
-    { name: "ALHWARY", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
-  // Owner 3
-    { name: "Sukuna", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" },
-  // Owner 4 
-   { name: "عمورتي", jid: "201211883781@s.whatsapp.net", lid: "201211883781@lid" }
+    { name: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
+    { name: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌", lid: "201556853817@lid", jid: "201556853817@s.whatsapp.net" },
+    { name: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" },
+    { name: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌", jid: "201211883781@s.whatsapp.net", lid: "201211883781@lid" }
   ],
   settings: { noWelcome: false },
   commandsPath: './plugins'
@@ -33,8 +29,8 @@ if (!global.db) {
 /* =========== Config ========== */
 const { config } = client;
 config.info = { 
-  nameBot: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې", 
-  nameChannel: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې", 
+  nameBot: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥", 
+  nameChannel: "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥", 
   idChannel: "201556853817@newsletter",
   urls: {
     repo: "201556853817",
@@ -42,8 +38,8 @@ config.info = {
     channel: "https://whatsapp.com/channel/0029VaQim2bAu3aPsRVaDq3v"
   },
   copyright: { 
-    pack: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې', 
-    author: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې'
+    pack: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥', 
+    author: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥'
   },
   images: [
     "https://i.pinimg.com/originals/11/26/97/11269786cdb625c60213212aa66273a9.png",
@@ -56,11 +52,10 @@ config.info = {
 client.start();
 
 setTimeout(async () => {
-if (client.commandSystem) { 
-sub(client)
+  if (client.commandSystem) { 
+    sub(client)
   }
 }, 2000);
-
 
 /* =========== Catch Errors ========== */
 process.on('uncaughtException', (e) => {
@@ -71,16 +66,11 @@ process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 });
 
-
-/* 
-=========== Memory Monitor ========== 
-
+/* =========== Memory Monitor ========== */
 setInterval(() => {
     const used = process.memoryUsage().rss / 1024 / 1024
     if (used > 800) {
-        console.log(`🔄 Bot memory full (${used.toFixed(1)}MB), restarting...`)
+        console.log(`🔥 Bot memory full (${used.toFixed(1)}MB), restarting...`)
         process.exit(1) 
     }
-}, 300_000) 
-
-*/
+}, 300_000)
