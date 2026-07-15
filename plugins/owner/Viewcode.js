@@ -3,11 +3,10 @@ import path from 'path';
 
 const handler = async (m, { conn, bot, text, command }) => {
     try {
-        if (!m.isOwner) return m.reply('❌ هذا الأمر مخصص للمطور فقط.');
+        if (!m.isOwner) return m.reply('❌ هذا الأمر مخصص لـ 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥 فقط.');
 
-        // 🔥 تم الإصلاح هنا: قفلنا القوس ) بعد النص مباشرة
         if (!text) return m.reply(
-`_🕸 طريقه الاستخدام_ — *.${command} اسم_الملف*
+`_🕸 طريقة الاستخدام_ — *.${command} اسم_الملف*
 > مثال : .${command} menu`
         );
 
@@ -71,7 +70,7 @@ const handler = async (m, { conn, bot, text, command }) => {
     }
 };
 
-handler.category = 'owner';
+handler.category = '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥';
 handler.usage = ["كود"];
 handler.command = ['كود', 'getcode', 'cat'];
 handler.owner = true;
