@@ -1,4 +1,3 @@
-
 import fs from "fs";
 import path from "path";
 
@@ -33,11 +32,11 @@ const group = async (ctx, event, eventType) => {
 
         await ctx.sock.msgUrl(event.chat, txt, {
             img,
-            title: ctx.config?.info.nameBot || "WhatsApp Bot",
-            body: "A simple WhatsApp bot for beginners, by OWNER",
+            title: ctx.config?.info.nameBot || "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥",
+            body: "A WhatsApp bot powered by 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥",
             mentions: author ? [author, ...participants] : participants,
             newsletter: {
-                name: 'OWNER',
+                name: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥',
                 jid: '201556853817@newsletter'
             },
             big: ["remove", "add"].includes(eventType)
@@ -69,17 +68,17 @@ const access = async (msg, checkType, time) => {
 
     const messages = {
         cooldown: `*♡⏳ Wait ${time || 'a few'} seconds ⏳♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You need to wait a bit, this command cannot be spammed_*`,
-        owner: `*♡ 🇩🇪 This command is for developers only 🇩🇪♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You must be a bot developer to use this command_*`,
+        owner: `*♡ 🔥 This command is for 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 developers only 🔥♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You must be a bot developer to use this command_*`,
         group: `*♡💠 This command works only in groups 💠♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You must use this command inside a group_*`,
         admin: `*♡📯 This command is for admins only 📯♡*\n⊱⋅ ──────────── ⋅⊰\n> *_You are just a member, you need admin rights_*`,
         private: `*♡🏷️ This command works only in private chat 🏷️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_Use this command in private chat only_*`,
         botAdmin: `*♡📌 I must be an admin to execute this command 📌♡*\n⊱⋅ ──────────── ⋅⊰\n> *_Make me admin to use this command_*`,
-        noSub: `*♡🫒 This command works only in the main bot 🫒♡*`,
+        noSub: `*♡🔥 This command works only in the main bot 🔥♡*`,
         disabled: `*♡🗃️ Command disabled (under maintenance) 🗃️♡*\n⊱⋅ ──────────── ⋅⊰\n> *_This command is under maintenance, will be back soon_*`,
         error: `*✦♡⚠️ Unexpected error ⚠️♡✦*
 
 ⊱⋅ ──────────── ⋅⊰
-❌ Contact developers to fix the issue ❌
+❌ Contact 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 developers to fix the issue ❌
 ⊱⋅ ──────────── ⋅⊰
 
 💡 Quick fix: type ".developer" to get the developer's number 👑`
@@ -89,9 +88,9 @@ const access = async (msg, checkType, time) => {
         await conn.msgUrl(msg.chat, messages[checkType], {
             img: "https://i.pinimg.com/originals/02/c3/51/02c351dfd4eb72a62f225ce964dc510d.jpg",
             title: "Alerts | Warnings",
-            body: "Bot alerts: Read the message to learn more",
+            body: "Bot alerts: Powered by 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥",
             newsletter: {
-                name: 'OWNER',
+                name: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥',
                 jid: '201556853817@newsletter'
             },
             big: false
