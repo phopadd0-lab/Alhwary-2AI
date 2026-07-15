@@ -3,12 +3,11 @@ import { SubBots } from "meowsab";
 async function sub(client) {
 
   global.subBots = new SubBots(client.commandSystem)
-  
-  SubBots.pariCode("ALHW1234") // Pairing
- 
+
+  SubBots.pariCode("𝐴𝐿𝐻𝑊1234") // Pairing
+
   const { config } = client;
 
- 
   await global.subBots.setConfig({
     commandsPath: config.commandsPath || './plugins',
     owners: config.owners,
@@ -32,7 +31,6 @@ async function sub(client) {
     console.log(`🔐 [SubBot ${uid}] Pairing code: ${code}`);
   });
 
-
   global.subBots.on('message', async (uid, msg) => {
     if (msg.key.id.includes("3EB0")) return;
 
@@ -44,10 +42,9 @@ async function sub(client) {
 
     try {
       if (body === "تست") {
-    await sock.sendMessage(msg.key.
-        remoteJid, {
-        react: { text: "🔥", key: msg.key }
-       });
+        await sock.sendMessage(msg.key.remoteJid, {
+          react: { text: "🔥", key: msg.key }
+        });
       }
 
     } catch (error) {
