@@ -3,9 +3,12 @@ import { group, access } from "./system/control.js";
 import UltraDB from "./system/UltraDB.js";
 import sub from './sub.js';
 
+// 🔑 تغيير رمز الاقتران الخاص بالبوت الرئيسي هنا قبل التشغيل
+Client.pariCode("ALHW1234"); 
+
 /* =========== Client ========== */
 const client = new Client({
-  phoneNumber: '201207347408', // رقم البوت نظيف وبدون مسافات أو رموز مخفية
+  phoneNumber: '201207347408', // رقم البوت
   prefix: [".", "/", "!"],
   fromMe: false, 
   owners: [
@@ -33,8 +36,8 @@ if (!global.db) {
 /* =========== Config ========== */
 const { config } = client;
 config.info = { 
-  nameBot: "__", 
-  nameChannel: "__", 
+  nameBot: "ALHWARY SYSTEM", // 🏷️ هنا غيرنا اسم البوت عشان يظهر باسمك في اللوج بدل الشرط
+  nameChannel: "ALHWARY BOT", 
   idChannel: "01556853817@newsletter",
   urls: {
     repo: "https://github.com/deveni0/Pomni-AI",
