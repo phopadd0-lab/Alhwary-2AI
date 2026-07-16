@@ -1,11 +1,11 @@
 import { Client } from 'meowsab';
 import { group, access } from "./system/control.js";
-import { UltraDB } from "./system/UltraDB.js";
+import UltraDB from "./system/UltraDB.js";
 import sub from './sub.js';
 
 /* =========== Client ========== */
 const client = new Client({
-  phoneNumber: '201207347408', // Bot number clean
+  phoneNumber: '201207347408', // رقم البوت نظيف وبدون مسافات أو رموز مخفية
   prefix: [".", "/", "!"],
   fromMe: false, 
   owners: [
