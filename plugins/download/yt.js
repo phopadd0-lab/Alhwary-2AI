@@ -1,7 +1,7 @@
 import { Scrapy } from "meowsab";
 
 const handler = async (m, { conn, command, text }) => {
-  if (!text) throw '*❲ ❤️ ❳ ~ حط رابط جنب الأمر ~ ❲ 💙 ❳ *';
+  if (!text) throw '*❲ 🌿 ❳ ~ حط رابط جنب الامر ~ ❲ 🍃 ❳ *';
 
   if (!text.match(/youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\//)) {
     throw '*❌ ~ الرابط مش صحيح ~ حط رابط يوتيوب صحيح*';
@@ -12,13 +12,13 @@ const handler = async (m, { conn, command, text }) => {
 
   if (!res?.status) throw '❌ فشل في جلب البيانات من الرابط';
 
-  const type = isAudio ? 'أغـانـي' : 'فيـديـوز';
+  const type = isAudio ? 'اغـانـي' : 'فيـديـوز';
   let caption = `*🐞 YouTube | يـوتـيـوب ${type} 🐞*\n\n`;
-  caption += `╭─┈─┈─┈─⟞🔥⟝─┈─┈─┈─╮\n`;
-  caption += `*❲ 📽️ ❳ العنوان:* ${res.title}\n`;
-  caption += `*❲ 📢 ❳ القناة:* ${res.channel}\n`;
-  caption += `*❲ ⏳ ❳ الجودة:* ${res.quality}\n`;
-  caption += `╰─┈─┈─┈─⟞🔥⟝─┈─┈─┈─╯\n`;
+  caption += `╭─┈─┈─┈─⟞🍧⟝─┈─┈─┈─╮\n`;
+  caption += `*❲ 📽️ ❳ الـعـنـون:* ${res.title}\n`;
+  caption += `*❲ 📢 ❳ الـقـنـاة:* ${res.channel}\n`;
+  caption += `*❲ ⏳ ❳ الـجـوده:* ${res.quality}\n`;
+  caption += `╰─┈─┈─┈─⟞🍬⟝─┈─┈─┈─╯\n`;
   caption += `> _*❲ ⏱️ ❳ الرجاء الانتظار قليلاً...*_`;
 
   await conn.sendMessage(m.chat, { 
@@ -28,8 +28,8 @@ const handler = async (m, { conn, command, text }) => {
       isForwarded: true,
       forwardingScore: 1,
       forwardedNewsletterMessageInfo: {
-        newsletterJid: '201556853817@newsletter',
-        newsletterName: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥',
+        newsletterJid: '120363419296439517@newsletter',
+        newsletterName: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌',
         serverMessageId: 0
       },
       externalAdReply: {
@@ -54,7 +54,7 @@ const handler = async (m, { conn, command, text }) => {
 };
 
 handler.usage = ["يوتيوب", "يوت_اغنيه"];
-handler.category = "𝐴𝐿𝐻𝑊𝐴𝑅𝑌 🔥 downloads";
+handler.category = "downloads";
 handler.command = ['يوت_اغنيه', 'يوتيوب', "ytmp3", "ytmp4"];
 
 export default handler;
