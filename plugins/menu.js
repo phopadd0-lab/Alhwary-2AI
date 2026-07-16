@@ -20,7 +20,7 @@ const CATEGORIES = [
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
 
-const IMAGE_URL = "https://g.top4top.io/p_3818ts94p0.jpg";
+const IMAGE_URL = "https://d.top4top.io/p_3849qtczv0.jpg";
 
 /* 🛠️ CONTEXT CONFIG */
 const context = (jid) => ({
