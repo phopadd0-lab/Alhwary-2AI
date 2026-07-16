@@ -1,11 +1,11 @@
 import { Client } from 'meowsab';
 import { group, access } from "./system/control.js";
-import UltraDB from "./system/UltraDB.js";
+import { UltraDB } from "./system/UltraDB.js";
 import sub from './sub.js';
 
 /* =========== Client ========== */
 const client = new Client({
-  phoneNumber:'‏‪2‏‪01207347408‬‏/‬‏', // Bot number
+  phoneNumber: '201207347408', // Bot number clean
   prefix: [".", "/", "!"],
   fromMe: false, 
   owners: [
@@ -16,7 +16,7 @@ const client = new Client({
   // Owner 3
     { name: "Sukuna", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" },
   // Owner 4 
-   { name: "عمورتي", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" }
+    { name: "عمورتي", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" }
   ],
   settings: { noWelcome: false },
   commandsPath: './plugins'
@@ -70,17 +70,3 @@ process.on('uncaughtException', (e) => {
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 });
-
-
-/* 
-=========== Memory Monitor ========== 
-
-setInterval(() => {
-    const used = process.memoryUsage().rss / 1024 / 1024
-    if (used > 800) {
-        console.log(`🔄 Bot memory full (${used.toFixed(1)}MB), restarting...`)
-        process.exit(1) 
-    }
-}, 300_000) 
-
-*/
