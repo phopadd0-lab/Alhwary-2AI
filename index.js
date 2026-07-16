@@ -1,75 +1,72 @@
-Import { SubBots } from "meowsab";
+import { Client } from 'meowsab';
+import { group, access } from "./system/control.js";
+import UltraDB from "./system/UltraDB.js";
+import sub from './sub.js';
 
-async function sub(client) {
+/* =========== Client ========== */
+const client = new Client({
+  phoneNumber: '201207347408', // رقم البوت نظيف وبدون مسافات أو رموز مخفية
+  prefix: [".", "/", "!"],
+  fromMe: false, 
+  owners: [
+  // Owner 1
+    { name: "VA", lid: "201211883781@lid", jid: "201211883781@s.whatsapp.net" },
+  // Owner 2
+    { name: "emam", lid: "201211883781@lid", jid: "201211883781@s.whatsapp.net" },
+  // Owner 3
+    { name: "Sukuna", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" },
+  // Owner 4 
+    { name: "عمورتي", jid: "201556853817@s.whatsapp.net", lid: "201556853817@lid" }
+  ],
+  settings: { noWelcome: false },
+  commandsPath: './plugins'
+});
 
-  global.subBots = new SubBots(client.commandSystem)
+client.onGroupEvent(group);
+client.onCommandAccess(access);
 
-  SubBots.pariCode("ALHW1234") // Pairing
-
-  const { config } = client;
-
-  await global.subBots.setConfig({
-    commandsPath: config.commandsPath || './plugins',
-    owners: config.owners,
-    prefix: config.prefix,
-    info: config.info,
-    printQR: false
-  });
-
-  global.subBots.on('error', (uid, error) => {
-    console.error(`❌ [SubBot ${uid}] Error:`, error?.message || error);
-  });
-
-  const loadedCount = await global.subBots.load();
-  console.log(`✅ Loaded ${loadedCount} saved bots`);
-
-  global.subBots.on('ready', async (uid, sock) => {
-    console.log(`✅ [SubBot ${uid}] Connected!`);
-  });
-
-  global.subBots.on('pair', (uid, code) => {
-    console.log(`🔐 [SubBot ${uid}] Pairing code: ${code}`);
-  });
-
-  global.subBots.on('message', async (uid, msg) => {
-    if (msg.key.id.includes("3EB0")) return;
-
-    const body = getMessageText(msg);
-    const bot = global.subBots.get(uid);
-    const sock = bot?.sock;
-
-    if (!sock || !body) return;
-
-    try {
-      if (body === "تست") {
-        await sock.sendMessage(msg.key.remoteJid, {
-          react: { text: "🔥", key: msg.key }
-        });
-      }
-
-    } catch (error) {
-      console.error(`❌ [SubBot ${uid}] Send error:`, error?.message || error);
-    }
-  });
-
-  global.subBots.on('close', (uid) => {
-    console.log(`🔌 [SubBot ${uid}] Disconnected`);
-  });
-
-  global.subBots.on('badSession', (uid) => {
-    console.log(`⚠️ [SubBot ${uid}] Bad session, removed`);
-  });
-
-  return global.subBots;
+/* =========== Database ========== */
+if (!global.db) {
+    global.db = new UltraDB();
 }
 
-function getMessageText(msg) {
-  if (!msg.message) return null;
-  if (msg.message.conversation) return msg.message.conversation;
-  if (msg.message.extendedTextMessage?.text) return msg.message.extendedTextMessage.text;
-  if (msg.message.imageMessage?.caption) return msg.message.imageMessage.caption;
-  if (msg.message.videoMessage?.caption) return msg.message.videoMessage.caption;
-  return msg.body || null;
-}
+/* =========== Config ========== */
+const { config } = client;
+config.info = { 
+  nameBot: "__", 
+  nameChannel: "__", 
+  idChannel: "01556853817@newsletter",
+  urls: {
+    repo: "https://github.com/deveni0/Pomni-AI",
+    api: "https://emam-api.web.id",
+    channel: "https://whatsapp.com/channel/0029VaQim2bAu3aPsRVaDq3v"
+  },
+  copyright: { 
+    pack: 'ڤـ ـ VA ـ ـا', 
+    author: 'VA'
+  },
+  images: [
+    "https://i.pinimg.com/originals/11/26/97/11269786cdb625c60213212aa66273a9.png",
+    "https://i.pinimg.com/originals/e2/21/20/e221203f319df949ee65585a657501a2.jpg",
+    "https://i.pinimg.com/originals/bb/77/0f/bb770fad66a634a6b3bf93e9c00bf4e5.jpg"
+  ]
+};
 
-export default sub;
+/* =========== Start ========== */
+client.start();
+
+setTimeout(async () => {
+if (client.commandSystem) { 
+sub(client)
+  }
+}, 2000);
+
+
+/* =========== Catch Errors ========== */
+process.on('uncaughtException', (e) => {
+    if (e.message.includes('rate-overlimit')) {}
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err)
+});
