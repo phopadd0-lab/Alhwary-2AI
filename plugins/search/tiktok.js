@@ -15,21 +15,21 @@ if (data && data.length > 0) {
             { 
                 name: "cta_copy", 
                 params: { 
-                    display_text: "👌🏼╎ 🇵🇸", 
-                    copy_code: "O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې" 
+                    display_text: "💟╎ My Channel", 
+                    copy_code: "https://whatsapp.com/channel/0029Vb3UUKz3QxS3bgWmTc3x" 
                 } 
             },
         ],
         mentions: [m.sender],
         newsletter: {
-            name: 'O̷W̷N̷E̷R̷ | ڵــﮪــﯡٰڕې',
-            jid: '201556853817@newsletter'
+            name: '𝐴𝐿𝐻𝑊𝐴𝑅𝑌',
+            jid: '120363419296439517@newsletter'
         },
     }, global.reply_status)
 } else {
     await conn.sendMessage(m.chat, { text: `لا يوجد "${text}"` })
 }
-    
+
   } catch (error) {
     console.error(error.messsage);
     m.react("❌")
@@ -37,6 +37,6 @@ if (data && data.length > 0) {
 }
 
 test.category = "search";
-test.usage = ["ايديت "];
-test.command = ["ايديت "];
+test.usage = ["بحث"];
+test.command = ["بحث"];
 export default test;
