@@ -19,7 +19,7 @@ const CATEGORIES = [
 ];
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
-const IMAGE_URL = "https://qu.ax/x/DYdwl.jpg";
+const IMAGE_URL = "https://b.top4top.io/p_3851yg85t0.jpg";
 
 async function handler(m, { conn, bot, command, args, text }) {
 
@@ -69,7 +69,7 @@ async function handler(m, { conn, bot, command, args, text }) {
                 { name: "cta_url", params: { display_text: "『🍃| الـمـطـور |🍃』", url: "https://wa.me/+201556853817" } },
                 { name: "cta_url", params: { display_text: "🍷 | الـقـنـاه", url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U" } },
                 { name: "quick_reply", params: { display_text: "『🌀| مـعـلـومـات الـسـيـسـتـم|🌀』", id: ".sysinfo" } },
-                { name: "quick_reply", params: { display_text: "『🌿| تـحـديـث الـبـوت |🌿』", id: ".restart" } },
+                { name: "quick_reply", params: { display_text: "『🌿| تـحـديـث الـبـوت|🌿』", id: ".restart" } },
                 { name: "single_select", params: { title: "[『❄️┆الاقـسـام┆❄️』]", sections: sections } }
             ],
             mentions: [m.sender]
