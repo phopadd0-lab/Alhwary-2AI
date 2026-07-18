@@ -19,58 +19,13 @@ const CATEGORIES = [
 ];
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
-
 const IMAGE_URL = "https://d.top4top.io/p_3849qtczv0.jpg";
-
-/* 🛠️ CONTEXT CONFIG */
-const context = (jid) => ({
-    mentionedJid: [jid],
-    isForwarded: true,
-    forwardingScore: 1,
-    forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363419296439517@newsletter', // 🟢 هنا قناتك الجديدة والجاهزة للتوجيه
-        newsletterName: 'EL-HAWARY SYSTEM | 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑩𝑶𝑻',
-        serverMessageId: -1
-    },
-    externalAdReply: {
-        title: "• 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑪𝑶𝑹𝑬 •",
-        body: "SYSTEM: ONLINE",
-        thumbnailUrl: IMAGE_URL,
-        sourceUrl: '',
-        mediaType: 1,
-        renderLargerThumbnail: true
-    }
-});
 
 async function handler(m, { conn, bot, command, args }) {
 
-    if (/^\.$/i.test(m.text) || command === '.') {
-        await conn.sendMessage(m.chat, {
-            text: `// SYSTEM_STATUS: ACTIVE ✔`,
-            contextInfo: context(m.sender)
-        }, { quoted: m });
-        return;
-    }
-
     const selected = parseInt(args[0]);
-    const now = new Date();
-    const uptimeSeconds = process.uptime();
-
-    const hours = Math.floor(uptimeSeconds / 3600);
-    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-    const seconds = Math.floor(uptimeSeconds % 60);
-
-    const uptimeFormatted =
-        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-    const date = now.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    });
 
     if (!selected && !args[0]) {
-
         const sections = [{
             title: " [ SELECT COMMAND MODULE ] ",
             rows: CATEGORIES.map(c => ({
@@ -80,47 +35,28 @@ async function handler(m, { conn, bot, command, args }) {
             }))
         }];
 
-        // حساب الرام والمساحة والبنج من قلب السيرفر
-        const usedRAM = (process.memoryUsage().rss / 1024 / 1024).toFixed(0);
-        const freeMemory = (process.memoryUsage().heapTotal / 1024 / 1024).toFixed(0);
-        const latency = (Date.now() - m.messageTimestamp * 1000);
-
-        // المنيو الفخمة والمنظمة بالأيقونات السيبرانية الخفيفة
-        const menuText=`┌─── ❖>\[ 𝐴𝐿𝐻𝑊𝐴𝑅𝑌 ] ❖───┐
+        const menuText = `┌─── ❖ [ 𝑨𝑳𝑯𝑾𝑨𝑹𝒀 𝑪𝑶𝑹𝑬 ] ❖ ───┐
 │
-> │ 🫆 OWNER : +201556853817
-> │ 📊 RAM   : ${usedRAM} MB
-> │ 🐧 DISK  : ${freeMemory} MB FREE
-> │ ⚡ PING  : ${latency > 0 && latency < 5000 ? latency : Math.floor(Math.random() * 40) + 10} ms
+│ 🕊️ أهلاً بك يا صديقي في نظامنا.
+│ نحن هنا لخدمتك بكل هدوء.
 │
-> └─── ❖ [ SELECT MODULE BELOW ] ❖ ───`;
+│ 📜 ❲ قـوانـيـن الاسـتـخـدام ❳ :
+│ 1. يمنع السب أو الإساءة للبوت.
+│ 2. يمنع الإزعاج بالأوامر المتكررة.
+│ 3. يمنع محاولة اختراق النظام.
+│
+└─── ❖ [ EL-HAWARY SYSTEM ] ❖ ───`;
 
         await conn.sendButtonNormal(m.chat, {
             media: { url: IMAGE_URL },
             mediaType: 'image',
             caption: menuText,
             buttons: [
-                {
-                    name: "cta_url",
-                    params: {
-                        display_text: "•『🐊┆الـمـطـور┆🐊•",
-                        url: "https://wa.me/+201556853817"
-                    }
-                },
-                {
-                    name: "cta_url",
-                    params: {
-                        display_text: "• 『🍷┆الـقـنـاه┆🍷』•",
-                        url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U"
-                    }
-                },
-                {
-                    name: "single_select",
-                    params: {
-                        title: "[『❄️┆الاقـسـام┆❄️』]",
-                        sections: sections
-                    }
-                }
+                { name: "cta_url", params: { display_text: "🐊 | الـمـطـور", url: "https://wa.me/+201556853817" } },
+                { name: "cta_url", params: { display_text: "🍷 | الـقـنـاه", url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U" } },
+                { name: "quick_reply", params: { display_text: "⚙️ | مـعـلـومـات الـسـيـسـتـم", id: ".sysinfo" } },
+                { name: "quick_reply", params: { display_text: "🔄 | تـحـديـث الـبـوت", id: ".restart" } },
+                { name: "single_select", params: { title: "[『❄️┆الاقـسـام┆❄️』]", sections: sections } }
             ],
             mentions: [m.sender]
         }, global.reply_status || m);
@@ -129,39 +65,17 @@ async function handler(m, { conn, bot, command, args }) {
     }
 
     const cat = getCat(selected);
-
-    if (!cat) {
-        await conn.sendMessage(m.chat, {
-            text: '// ERROR: INVALID_MODULE_INDEX',
-            contextInfo: context(m.sender)
-        }, { quoted: m });
-        return;
-    }
+    if (!cat) return;
 
     const cmds = await bot.getAllCommands();
     const categoryCmds = cmds.filter(c => c.category === cat[2]);
 
-    if (!categoryCmds.length) {
-        await conn.sendMessage(m.chat, {
-            text: '// status: MODULE_EMPTY',
-            contextInfo: context(m.sender)
-        }, { quoted: m });
-        return;
-    }
+    if (!categoryCmds.length) return;
 
-    const cmdsList = categoryCmds.map(c =>
-        `│ ↳ /${c.usage?.join(`\n│ ↳ /`)}`
-    ).join('\n');
+    const cmdsList = categoryCmds.map(c => `│ ↳ /${c.usage?.join(`\n│ ↳ /`)}`).join('\n');
 
     await conn.sendMessage(m.chat, {
-        text: `
-┌─── [ MODULE: ${cat[1]} ] ───┐
-│
-${cmdsList}
-│
-└─── [ EL-HAWARY CORE ] ───┘
-        `.trim(),
-        contextInfo: context(m.sender)
+        text: `┌─── [ MODULE: ${cat[1]} ] ───┐\n│\n${cmdsList}\n│\n└─── [ EL-HAWARY CORE ] ───┘`,
     }, { quoted: m });
 }
 
