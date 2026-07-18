@@ -28,7 +28,7 @@ async function handler(m, { conn, bot, command, args, text }) {
         const usedRAM = (process.memoryUsage().rss / 1024 / 1024).toFixed(0);
         const freeMemory = (process.memoryUsage().heapTotal / 1024 / 1024).toFixed(0);
         const latency = (Date.now() - m.messageTimestamp * 1000);
-        return await conn.sendMessage(m.chat, { text: `┌─── ⚙️ [ 𝐒𝐘𝐒𝐓𝐄𝐌 𝐈𝐍𝐅𝐎 ] ⚙️ ───┐\n│\n│ 📊 الذاكرة المستخدمة: ${usedRAM} MB\n│ 🐧 الذاكرة الحرة: ${freeMemory} MB\n│ ⚡ سرعة الاستجابة: ${latency} ms\n│ 🖥️ المنصة: ${process.platform}\n│ 🟢 الحالة: ONLINE\n│\n└─── ❖ [ EL-HAWARY CORE ] ❖ ───` }, { quoted: m });
+        return await conn.sendMessage(m.chat, { text: `┌─── ⚙️ [ 𝐒𝐘𝐒𝐓𝐄𝐌 𝐈𝐍𝐅𝐎 ] ⚙️ ───┐\n│\n│ 📊 الذاكرة المستخدمة: ${usedRAM} MB\n│ ☄️ الذاكرة الحرة: ${freeMemory} MB\n│ ⚡ سرعة الاستجابة: ${latency} ms\n│ 🖥️ المنصة: ${process.platform}\n│ 🟢 الحالة: ONLINE\n│\n└─── ❖ [ EL-HAWARY CORE ] ❖ ───` }, { quoted: m });
     }
 
     if (command === 'restart') {
