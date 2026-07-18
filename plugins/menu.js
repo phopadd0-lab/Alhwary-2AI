@@ -19,7 +19,7 @@ const CATEGORIES = [
 ];
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
-const IMAGE_URL = "https://b.top4top.io/p_3851yg85t0.jpg";
+const IMAGE_URL = "";
 
 async function handler(m, { conn, bot, command, args, text }) {
 
