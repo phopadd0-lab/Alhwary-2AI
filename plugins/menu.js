@@ -20,6 +20,7 @@ const CATEGORIES = [
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
 const IMAGE_URL = "https://b.top4top.io/p_3851yg85t0.jpg";
+const OWNER_NUMBER = "201556853817@s.whatsapp.net"; // رقم المطور الذي ستصل إليه الشكاوى على الخاص
 
 async function handler(m, { conn, bot, command, args, text }) {
 
@@ -37,9 +38,22 @@ async function handler(m, { conn, bot, command, args, text }) {
         return process.exit();
     }
 
-    // --- منطق أوامر الأزرار: قسم الشكاوى ---
-    if (command === 'report') {
-        return await m.reply('🛡️ | مرحباً بك في قسم الدعم الفني والشكاوى.\n\nفضلاً، قم بكتابة تفاصيل المشكلة أو الأخطاء التي واجهتها في البوت في الرسالة القادمة وسيقوم المطور بمراجعتها في أقرب وقت.');
+    // --- منطق أوامر الأزرار: قسم الشكاوى والبلاغات ---
+    if (command === 'report' || command === 'شكوى' || command === 'ابلاغ') {
+        if (!text) {
+            return await m.reply('🛡️ *[ قـسـم الـبـلاغـات والـشـكـاوى ]*\n\nيرجى كتابة نص الشكوى أو المشكلة بعد الأمر مباشرة.\n*مثال:* `.ابلاغ هناك مشكلة في أمر الذكاء الاصطناعي`');
+        }
+
+        // إرسال الشكوى إلى المطور على الخاص
+        const reportText = `🚨 *[ بـلاغ جـديـد مـن مـسـتـخـدم ]*\n\n👤 *الـمـرسـل:* @${m.sender.split('@')[0]}\n💬 *الـروم:* ${m.isGroup ? m.chat : 'خاص'}\n\n📝 *نـص الـشـكـوى:*\n${text}`;
+        
+        await conn.sendMessage(OWNER_NUMBER, { 
+            text: reportText, 
+            mentions: [m.sender] 
+        });
+
+        // تأكيد للمستخدم
+        return await m.reply('✅ تم إرسال بلاغك بنجاح إلى المطور وسيجري مراجعته في أقرب وقت ممكن. شكراً لك!');
     }
 
     // --- منطق أوامر الأزرار: قائمة التقييم النجوم ---
@@ -47,7 +61,7 @@ async function handler(m, { conn, bot, command, args, text }) {
         const rateSections = [{
             title: "🌟 اختر تقييمك للبوت 🌟",
             rows: [
-                { title: "⭐⭐⭐⭐ Stars", description: "ممتاز - سريع وبدون أخطاء", id: ".submitrate 5" },
+                { title: "⭐⭐⭐⭐⭐ Stars", description: "ممتاز - سريع وبدون أخطاء", id: ".submitrate 5" },
                 { title: "⭐⭐⭐⭐ Star", description: "جيد جداً - يحتاج لتطوير بسيط", id: ".submitrate 4" },
                 { title: "⭐⭐⭐ Stars", description: "متوسط - هناك بعض البطء", id: ".submitrate 3" },
                 { title: "⭐⭐ Stars", description: "سيء - يحتوي على أخطاء", id: ".submitrate 2" },
@@ -58,7 +72,7 @@ async function handler(m, { conn, bot, command, args, text }) {
         await conn.sendButtonNormal(m.chat, {
             caption: "⭐ **قسم تقييم جودة الخدمة**\n\nرأيك يهمنا جداً لتطوير البوت وتحسين أدائه. من فضلك اختر عدد النجوم الذي تراه مناسباً لتجربتك:",
             buttons: [
-                { name: "single_select", params: { title: "点击选择 🌟 [ اضغط للتقييم ]", sections: rateSections } }
+                { name: "single_select", params: { title: "🌟 [ اضغط للتقييم ]", sections: rateSections } }
             ]
         }, m);
         return;
@@ -79,7 +93,7 @@ async function handler(m, { conn, bot, command, args, text }) {
             rows: CATEGORIES.map(c => ({
                 title: `[ ${c[1]} ]`,
                 description: `Load module: ${c[2]}`,
-                id: `.${command} ${c[0]}`
+                id: `.menu ${c[0]}`
             }))
         }];
 
@@ -91,8 +105,6 @@ async function handler(m, { conn, bot, command, args, text }) {
 │ 📜 ❲ قـوانـيـن الاسـتـخـدام ❳ :
 │ 1. يمنع السب أو الإساءة للبوت.
 │ 2. يمنع الإزعاج بالأوامر المتكررة.
-
-
 └─── ❖ [ 𝐴𝐿𝐻𝑊𝐴𝑅Y ] ❖ ───`;
 
         await conn.sendButtonNormal(m.chat, {
@@ -118,12 +130,20 @@ async function handler(m, { conn, bot, command, args, text }) {
     if (!cat) return;
     const cmds = await bot.getAllCommands();
     const categoryCmds = cmds.filter(c => c.category === cat[2]);
-    if (!categoryCmds.length) return;
-    const cmdsList = categoryCmds.map(c => `│ ↳ /${c.usage?.join(`\n│ ↳ /`)}`).join('\n');
+    if (!categoryCmds.length) return await m.reply('⚠️ هذا القسم فارغ حالياً أو تحت الصيانة.');
+    
+    const cmdsList = categoryCmds.map(c => {
+        if (Array.isArray(c.usage)) {
+            return `│ ↳ /${c.usage.join(`\n│ ↳ /`)}`;
+        } else {
+            return `│ ↳ /${c.usage || c.name}`;
+        }
+    }).join('\n');
+
     await conn.sendMessage(m.chat, { text: `┌─── [ MODULE: ${cat[1]} ] ───┐\n│\n${cmdsList}\n│\n└─── [ EL-HAWARY CORE ] ───┘` }, { quoted: m });
 }
 
 handler.customPrefix = /^\./; 
-handler.command = new RegExp('^(المهام|اوامر|الاوامر|menu|القائمة|🔥|\\.|sysinfo|restart|report|rate|submitrate)$', 'i');
+handler.command = new RegExp('^(المهام|اوامر|الاوامر|menu|القائمة|🔥|\\.|sysinfo|restart|report|شكوى|ابلاغ|rate|submitrate)$', 'i');
 
 export default handler;
