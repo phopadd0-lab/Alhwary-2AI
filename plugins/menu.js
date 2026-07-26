@@ -19,7 +19,7 @@ const CATEGORIES = [
 ];
 
 const getCat = n => CATEGORIES.find(c => c[0] === n);
-const IMAGE_URL = "https://b.top4top.io/p_3851yg85t0.jpg";
+const IMAGE_URL = "https://c.top4top.io/p_3859rw5tf0.jpg";
 const OWNER_NUMBER = "201211883781@s.whatsapp.net"; // رقم المطور الذي ستصل إليه الشكاوى على الخاص
 
 async function handler(m, { conn, bot, command, args, text }) {
@@ -113,7 +113,7 @@ async function handler(m, { conn, bot, command, args, text }) {
             caption: menuText,
             buttons: [
                 { name: "cta_url", params: { display_text: "『🍃| الـمـطـور |🍃』", url: "https://wa.me/+201556853817" } },
-                { name: "cta_url", params: { display_text: "🍷 | الـقـنـاه | 🍷", url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U" } },
+                { name: "cta_url", params: { display_text: "『🍷 | الـقـنـاه | 🍷』", url: "https://whatsapp.com/channel/0029Vb6VF4R3bbUwgCtJlC3U" } },
                 { name: "quick_reply", params: { display_text: "『🪻| الـشـكـاوي |🪻』", id: ".report" } },
                 { name: "quick_reply", params: { display_text: "『⭐| التـقـيـيـم |⭐』", id: ".rate" } },
                 { name: "quick_reply", params: { display_text: "『🌀|مـعـلـومـات الـسـيـسـتـم|🌀』", id: ".sysinfo" } },
@@ -144,6 +144,6 @@ async function handler(m, { conn, bot, command, args, text }) {
 }
 
 handler.customPrefix = /^\./; 
-handler.command = new RegExp('^(المهام|اوامر|الاوامر|menu|القائمة|🔥|\\.|sysinfo|restart|report|شكوى|ابلاغ|rate|submitrate)$', 'i');
+handler.command = new RegExp('^(المهام|منيو|منيو|menu|القائمة|🔥|\\.|sysinfo|restart|report|شكوى|ابلاغ|rate|submitrate)$', 'i');
 
 export default handler;
