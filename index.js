@@ -5,7 +5,7 @@ import sub from './sub.js';
 
 /* =========== Client ========== */
 const client = new Client({
-  phoneNumber:'962779585547', // رقم البوت نظيف وبدون مسافات أو رموز مخفية
+  phoneNumber:'201556853817', // رقم البوت نظيف وبدون مسافات أو رموز مخفية
   prefix: [".", "/", "!"],
   fromMe: false, 
   owners: [
